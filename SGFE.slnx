@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/Api/">
+    <Project Path="SGFE.Api/SGFE.Api.csproj" />
+  </Folder>
+  <Folder Name="/Core/" />
+  <Folder Name="/Core/Application/">
+    <Project Path="SGFE.Application/SGFE.Application.csproj" />
+  </Folder>
+  <Folder Name="/Core/Domein/">
+    <Project Path="SGFE.Domein/SGFE.Domein.csproj" />
+  </Folder>
+  <Folder Name="/Infraestructure/">
+    <Project Path="SGFE.Infraestructure/SGFE.Percistence.csproj" />
+  </Folder>
+</Solution>

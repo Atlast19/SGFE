@@ -1,0 +1,6 @@
+@SGFE.Api_HostAddress = http://localhost:5130
+
+GET {{SGFE.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
