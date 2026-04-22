@@ -11,20 +11,30 @@ namespace SGFE.Domein.Entitys.Configurations
     {
         public void Configure(EntityTypeBuilder<EnviosDGII> entity)
         {
-            entity.HasKey(e => e.Id).HasName("PK__EnviosDG__3214EC076CF83E2C");
+            entity.HasKey(e => e.Id).HasName("PK__EnviosDG__3214EC076137A979");
 
             entity.ToTable("EnviosDGII");
 
-            entity.Property(e => e.Estado)
-                .HasMaxLength(20)
-                .IsUnicode(false);
-            entity.Property(e => e.FechaEnvio).HasDefaultValueSql("(sysdatetime())");
-            entity.Property(e => e.TrackId).HasMaxLength(100);
+            entity.Property(e => e.CodigoRespuesta).HasMaxLength(10);
+            entity.Property(e => e.EstadoEnvio)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.FechaCreacion).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.FechaEnvio).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.Intentos).HasDefaultValue(1);
+            entity.Property(e => e.MensajeRespuesta).HasMaxLength(500);
+            entity.Property(e => e.RequestXML)
+                .IsRequired()
+                .HasColumnType("xml");
+            entity.Property(e => e.ResponseXML).HasColumnType("xml");
+            entity.Property(e => e.TrackId)
+                .IsRequired()
+                .HasMaxLength(50);
 
             entity.HasOne(d => d.Factura).WithMany(p => p.EnviosDGIIs)
                 .HasForeignKey(d => d.FacturaId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__EnviosDGI__Factu__571DF1D5");
+                .HasConstraintName("FK__EnviosDGI__Factu__45BE5BA9");
 
             OnConfigurePartial(entity);
         }

@@ -7,12 +7,17 @@ using System.Collections.Generic;
 
 namespace SGFE.Domein.Entitys.Configurations
 {
-    public partial class RoleConfiguration : IEntityTypeConfiguration<Role>
+    public partial class RoleConfiguration : IEntityTypeConfiguration<Roles>
     {
-        public void Configure(EntityTypeBuilder<Role> entity)
+        public void Configure(EntityTypeBuilder<Roles> entity)
         {
-            entity.HasKey(e => e.Id).HasName("PK__Roles__3214EC07C5C06D21");
+            entity.HasKey(e => e.Id).HasName("PK__Roles__3214EC07CD8F12EE");
 
+            entity.HasIndex(e => e.Nombre, "UQ__Roles__75E3EFCF48305C5F").IsUnique();
+
+            entity.Property(e => e.Descripcion).HasMaxLength(200);
+            entity.Property(e => e.FechaActualizado).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.FechaCreacion).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.Nombre)
                 .IsRequired()
                 .HasMaxLength(50);
@@ -20,6 +25,6 @@ namespace SGFE.Domein.Entitys.Configurations
             OnConfigurePartial(entity);
         }
 
-        partial void OnConfigurePartial(EntityTypeBuilder<Role> entity);
+        partial void OnConfigurePartial(EntityTypeBuilder<Roles> entity);
     }
 }

@@ -11,45 +11,42 @@ namespace SGFE.Domein.Entitys.Configurations
     {
         public void Configure(EntityTypeBuilder<Factura> entity)
         {
-            entity.HasKey(e => e.Id).HasName("PK__Facturas__3214EC074065C690");
+            entity.HasKey(e => e.Id).HasName("PK__Facturas__3214EC0733403BBF");
 
-            entity.HasIndex(e => e.ClienteId, "IX_Facturas_ClienteId");
+            entity.HasIndex(e => e.NCF, "UQ__Facturas__C7DE1C60CC8C4655").IsUnique();
 
-            entity.HasIndex(e => e.EmpresaId, "IX_Facturas_EmpresaId");
-
-            entity.HasIndex(e => e.Estado, "IX_Facturas_Estado");
-
-            entity.HasIndex(e => e.NumeroECF, "IX_Facturas_NumeroECF");
-
-            entity.HasIndex(e => e.NumeroECF, "UQ__Facturas__D8598D3AA0C979AD").IsUnique();
-
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysdatetime())");
             entity.Property(e => e.Estado)
+                .IsRequired()
                 .HasMaxLength(20)
-                .IsUnicode(false);
-            entity.Property(e => e.MontoGravado).HasColumnType("decimal(18, 2)");
-            entity.Property(e => e.MontoImpuestos).HasColumnType("decimal(18, 2)");
+                .HasDefaultValue("Pendiente");
+            entity.Property(e => e.FechaActualizacion).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.FechaCreacion).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.FechaEmision).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.ItbisTotal).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.MontoTotal).HasColumnType("decimal(18, 2)");
-            entity.Property(e => e.NumeroECF)
+            entity.Property(e => e.NCF)
                 .IsRequired()
-                .HasMaxLength(50);
-            entity.Property(e => e.TipoECF)
-                .IsRequired()
-                .HasMaxLength(5)
-                .IsUnicode(false);
-            entity.Property(e => e.TrackId).HasMaxLength(100);
-            entity.Property(e => e.XmlFirmado).HasColumnType("xml");
+                .HasMaxLength(19);
+            entity.Property(e => e.OtrosImpuestos)
+                .HasDefaultValue(0m)
+                .HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.TrackId).HasMaxLength(50);
             entity.Property(e => e.XmlGenerado).HasColumnType("xml");
 
             entity.HasOne(d => d.Cliente).WithMany(p => p.Facturas)
                 .HasForeignKey(d => d.ClienteId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Facturas__Client__4F7CD00D");
+                .HasConstraintName("FK__Facturas__Client__32AB8735");
 
             entity.HasOne(d => d.Empresa).WithMany(p => p.Facturas)
                 .HasForeignKey(d => d.EmpresaId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Facturas__Empres__4E88ABD4");
+                .HasConstraintName("FK__Facturas__Empres__31B762FC");
+
+            entity.HasOne(d => d.TipoECF).WithMany(p => p.Facturas)
+                .HasForeignKey(d => d.TipoECFId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Facturas__TipoEC__339FAB6E");
 
             OnConfigurePartial(entity);
         }

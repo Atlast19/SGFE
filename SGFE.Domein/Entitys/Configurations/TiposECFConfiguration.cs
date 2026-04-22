@@ -11,14 +11,17 @@ namespace SGFE.Domein.Entitys.Configurations
     {
         public void Configure(EntityTypeBuilder<TiposECF> entity)
         {
-            entity.HasKey(e => e.Codigo).HasName("PK__TiposECF__06370DAD8BFE4EBF");
+            entity.HasKey(e => e.Id).HasName("PK__TiposECF__3214EC07BC4E39DD");
 
             entity.ToTable("TiposECF");
 
+            entity.HasIndex(e => e.Codigo, "UQ__TiposECF__06370DAC5AFBFC1B").IsUnique();
+
+            entity.Property(e => e.Activo).HasDefaultValue(true);
             entity.Property(e => e.Codigo)
-                .HasMaxLength(5)
-                .IsUnicode(false);
-            entity.Property(e => e.Descripcion).HasMaxLength(150);
+                .IsRequired()
+                .HasMaxLength(5);
+            entity.Property(e => e.Descripcion).HasMaxLength(100);
 
             OnConfigurePartial(entity);
         }

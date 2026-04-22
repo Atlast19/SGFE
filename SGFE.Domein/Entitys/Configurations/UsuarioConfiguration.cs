@@ -11,24 +11,35 @@ namespace SGFE.Domein.Entitys.Configurations
     {
         public void Configure(EntityTypeBuilder<Usuario> entity)
         {
-            entity.HasKey(e => e.Id).HasName("PK__Usuarios__3214EC07966E3A3E");
+            entity.HasKey(e => e.Id).HasName("PK__Usuarios__3214EC07F0836CFA");
 
-            entity.HasIndex(e => e.Username, "UQ__Usuarios__536C85E462FBC990").IsUnique();
+            entity.HasIndex(e => e.ApiKey, "UQ__Usuarios__A4E6E1864BAA108F").IsUnique();
+
+            entity.HasIndex(e => e.Email, "UQ__Usuarios__A9D105346D8ACA49").IsUnique();
 
             entity.Property(e => e.Activo).HasDefaultValue(true);
-            entity.Property(e => e.ApiKey).HasMaxLength(255);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysdatetime())");
+            entity.Property(e => e.ApiKey).HasMaxLength(64);
+            entity.Property(e => e.Email)
+                .IsRequired()
+                .HasMaxLength(100);
+            entity.Property(e => e.FechaActualizacion).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.FechaCreacion).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.Nombre)
+                .IsRequired()
+                .HasMaxLength(100);
             entity.Property(e => e.PasswordHash)
                 .IsRequired()
                 .HasMaxLength(255);
-            entity.Property(e => e.Username)
-                .IsRequired()
-                .HasMaxLength(100);
+
+            entity.HasOne(d => d.Empresa).WithMany(p => p.Usuarios)
+                .HasForeignKey(d => d.EmpresaId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Usuarios__Empres__123EB7A3");
 
             entity.HasOne(d => d.Rol).WithMany(p => p.Usuarios)
                 .HasForeignKey(d => d.RolId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Usuarios__RolId__3B75D760");
+                .HasConstraintName("FK__Usuarios__RolId__114A936A");
 
             OnConfigurePartial(entity);
         }

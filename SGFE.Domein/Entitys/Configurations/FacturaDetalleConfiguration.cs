@@ -11,25 +11,25 @@ namespace SGFE.Domein.Entitys.Configurations
     {
         public void Configure(EntityTypeBuilder<FacturaDetalle> entity)
         {
-            entity.HasKey(e => e.Id).HasName("PK__FacturaD__3214EC072592C652");
+            entity.HasKey(e => e.Id).HasName("PK__FacturaD__3214EC07BF861A24");
 
-            entity.Property(e => e.Cantidad).HasColumnType("decimal(18, 2)");
-            entity.Property(e => e.ITBIS)
-                .HasComputedColumnSql("(([Cantidad]*[PrecioUnitario])*([TasaITBIS]/(100)))", true)
-                .HasColumnType("decimal(38, 6)");
-            entity.Property(e => e.PrecioUnitario).HasColumnType("decimal(18, 2)");
-            entity.Property(e => e.SubTotal)
-                .HasComputedColumnSql("([Cantidad]*[PrecioUnitario])", true)
-                .HasColumnType("decimal(37, 4)");
-            entity.Property(e => e.TasaITBIS).HasColumnType("decimal(5, 2)");
-            entity.Property(e => e.Total)
-                .HasComputedColumnSql("([Cantidad]*[PrecioUnitario]+([Cantidad]*[PrecioUnitario])*([TasaITBIS]/(100)))", true)
-                .HasColumnType("decimal(38, 5)");
+            entity.ToTable("FacturaDetalle");
+
+            entity.Property(e => e.Cantidad).HasColumnType("decimal(18, 4)");
+            entity.Property(e => e.Descripcion)
+                .IsRequired()
+                .HasMaxLength(200);
+            entity.Property(e => e.Descuento)
+                .HasDefaultValue(0m)
+                .HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.FechaCreacion).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.Itbis).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.Monto).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.PrecioUnitario).HasColumnType("decimal(18, 4)");
 
             entity.HasOne(d => d.Factura).WithMany(p => p.FacturaDetalles)
                 .HasForeignKey(d => d.FacturaId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__FacturaDe__Factu__52593CB8");
+                .HasConstraintName("FK__FacturaDe__Factu__3E1D39E1");
 
             OnConfigurePartial(entity);
         }

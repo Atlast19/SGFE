@@ -11,23 +11,26 @@ namespace SGFE.Domein.Entitys.Configurations
     {
         public void Configure(EntityTypeBuilder<Empresa> entity)
         {
-            entity.HasKey(e => e.Id).HasName("PK__Empresas__3214EC0727F438F5");
+            entity.HasKey(e => e.Id).HasName("PK__Empresas__3214EC07C61FC645");
 
-            entity.HasIndex(e => e.RNC, "UQ__Empresas__CAFF6950716AA3CF").IsUnique();
+            entity.HasIndex(e => e.RNC, "UQ__Empresas__CAFF69508355E5C9").IsUnique();
 
+            entity.Property(e => e.Activo).HasDefaultValue(true);
             entity.Property(e => e.Ambiente)
                 .HasMaxLength(10)
-                .IsUnicode(false);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysdatetime())");
-            entity.Property(e => e.Direccion).HasMaxLength(255);
-            entity.Property(e => e.Email).HasMaxLength(150);
+                .HasDefaultValue("Prueba");
+            entity.Property(e => e.Direccion).HasMaxLength(200);
+            entity.Property(e => e.Email).HasMaxLength(100);
+            entity.Property(e => e.FechaActualizacion).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.FechaCreacion).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.Nombre)
                 .IsRequired()
-                .HasMaxLength(150);
+                .HasMaxLength(100);
+            entity.Property(e => e.NombreComercial).HasMaxLength(100);
             entity.Property(e => e.RNC)
                 .IsRequired()
-                .HasMaxLength(20);
-            entity.Property(e => e.Telefono).HasMaxLength(50);
+                .HasMaxLength(11);
+            entity.Property(e => e.Telefono).HasMaxLength(20);
 
             OnConfigurePartial(entity);
         }

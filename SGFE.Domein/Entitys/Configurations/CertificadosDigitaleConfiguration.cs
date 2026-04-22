@@ -7,26 +7,32 @@ using System.Collections.Generic;
 
 namespace SGFE.Domein.Entitys.Configurations
 {
-    public partial class CertificadosDigitaleConfiguration : IEntityTypeConfiguration<CertificadosDigitale>
+    public partial class CertificadosDigitaleConfiguration : IEntityTypeConfiguration<CertificadosDigital>
     {
-        public void Configure(EntityTypeBuilder<CertificadosDigitale> entity)
+        public void Configure(EntityTypeBuilder<CertificadosDigital> entity)
         {
-            entity.HasKey(e => e.Id).HasName("PK__Certific__3214EC07D2D06BC3");
+            entity.HasKey(e => e.Id).HasName("PK__Certific__3214EC0799B1377A");
 
             entity.Property(e => e.Activo).HasDefaultValue(true);
-            entity.Property(e => e.Archivo).IsRequired();
-            entity.Property(e => e.Password)
+            entity.Property(e => e.FechaCreacion).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.NombreArchivo)
                 .IsRequired()
-                .HasMaxLength(255);
+                .HasMaxLength(200);
+            entity.Property(e => e.PasswordEncriptada)
+                .IsRequired()
+                .HasMaxLength(256);
+            entity.Property(e => e.RutaArchivo)
+                .IsRequired()
+                .HasMaxLength(500);
 
             entity.HasOne(d => d.Empresa).WithMany(p => p.CertificadosDigitales)
                 .HasForeignKey(d => d.EmpresaId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Certifica__Empre__440B1D61");
+                .HasConstraintName("FK__Certifica__Empre__17F790F9");
 
             OnConfigurePartial(entity);
         }
 
-        partial void OnConfigurePartial(EntityTypeBuilder<CertificadosDigitale> entity);
+        partial void OnConfigurePartial(EntityTypeBuilder<CertificadosDigital> entity);
     }
 }

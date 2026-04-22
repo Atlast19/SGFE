@@ -27,7 +27,7 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[ConsultasEstado]",
+         "Name": "[dbo].[Configuracion]",
          "ObjectType": 0
       },
       {
@@ -39,7 +39,7 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[FacturaDetalles]",
+         "Name": "[dbo].[FacturaDetalle]",
          "ObjectType": 0
       },
       {
@@ -47,7 +47,7 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[LogsSistema]",
+         "Name": "[dbo].[Logs]",
          "ObjectType": 0
       },
       {
@@ -55,7 +55,7 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[SecuenciasNCF]",
+         "Name": "[dbo].[SecuenciaNCF]",
          "ObjectType": 0
       },
       {

@@ -11,28 +11,29 @@ namespace SGFE.Domein.Entitys.Configurations
     {
         public void Configure(EntityTypeBuilder<Cliente> entity)
         {
-            entity.HasKey(e => e.Id).HasName("PK__Clientes__3214EC07A971B7E6");
+            entity.HasKey(e => e.Id).HasName("PK__Clientes__3214EC078FBC5313");
 
-            entity.HasIndex(e => e.RncOCedula, "IX_Clientes_RNC");
+            entity.HasIndex(e => new { e.EmpresaId, e.Documento }, "UQ_Cliente_Empresa_Documento").IsUnique();
 
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysdatetime())");
-            entity.Property(e => e.Direccion).HasMaxLength(255);
-            entity.Property(e => e.Email).HasMaxLength(150);
-            entity.Property(e => e.Nombre)
-                .IsRequired()
-                .HasMaxLength(150);
-            entity.Property(e => e.RncOCedula)
+            entity.Property(e => e.Activo).HasDefaultValue(true);
+            entity.Property(e => e.Direccion).HasMaxLength(200);
+            entity.Property(e => e.Documento)
                 .IsRequired()
                 .HasMaxLength(20);
-            entity.Property(e => e.Telefono).HasMaxLength(50);
-            entity.Property(e => e.TipoDocumento)
-                .HasMaxLength(10)
-                .IsUnicode(false);
+            entity.Property(e => e.Email).HasMaxLength(100);
+            entity.Property(e => e.FechaActualizacion).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.FechaCreacion).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.Nombre)
+                .IsRequired()
+                .HasMaxLength(100);
+            entity.Property(e => e.NombreComercial).HasMaxLength(100);
+            entity.Property(e => e.Telefono).HasMaxLength(20);
+            entity.Property(e => e.TipoDocumento).HasMaxLength(10);
 
             entity.HasOne(d => d.Empresa).WithMany(p => p.Clientes)
                 .HasForeignKey(d => d.EmpresaId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Clientes__Empres__48CFD27E");
+                .HasConstraintName("FK__Clientes__Empres__2180FB33");
 
             OnConfigurePartial(entity);
         }
