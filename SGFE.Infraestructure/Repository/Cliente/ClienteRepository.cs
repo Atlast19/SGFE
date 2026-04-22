@@ -1,5 +1,4 @@
-﻿
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SGFE.Domein.Interfaces;
 
@@ -28,12 +27,22 @@ namespace SGFE.Percistence.Repository.Cliente
             throw new NotImplementedException();
         }
 
-        public Task UpdateClienteAsync(Domein.Entitys.Cliente entity)
+        public Task<List<Domein.Entitys.Cliente>> GetAllClienteAsync(string SPname)
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> ValidarClienteAsync(string RNCoCedula)
+        public Task GetClienteByEmpresaIdAsync(int EmpresaId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task GetClienteByIdAsync(int ClienteId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UpdateClienteAsync(Domein.Entitys.Cliente entity)
         {
             throw new NotImplementedException();
         }
