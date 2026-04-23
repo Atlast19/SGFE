@@ -3,31 +3,26 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SGFE.Domein.Interfaces;
 
-namespace SGFE.Percistence.Repository.Roles
+namespace SGFE.Percistence.Repository.Configuracion
 {
-    public class RolesRepository : IRolesRepository
+    public class ConfigurarionRepository : IConfiguracionRepository
     {
         private readonly IConfiguration _configuration;
-        private readonly ILogger<RolesRepository> _logger;
+        private readonly ILogger<ConfigurarionRepository> _logger;
         private readonly string _connectionString;
 
-        public RolesRepository(IConfiguration configuration, ILogger<RolesRepository> logger)
+        public ConfigurarionRepository(IConfiguration configuration, ILogger<ConfigurarionRepository> logger)
         {
             _configuration = configuration;
             _logger = logger;
             _connectionString = _configuration.GetConnectionString("DefaultConnection");
         }
-        public Task CreateRoleAsync(Domein.Entitys.Roles entity)
+        public Task<List<Domein.Entitys.Configuracion>> GetConfiguracionAsync(int? empresaId, string clave)
         {
             throw new NotImplementedException();
         }
 
-        public Task<List<Domein.Entitys.Roles>> GetAllRoleAsync(string SPname)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Domein.Entitys.Roles> GetRoleByIdAsync(int RoleId)
+        public Task UpsetConfiguracionAync(int? empresaId, string clave, string valor, string descripcion)
         {
             throw new NotImplementedException();
         }
