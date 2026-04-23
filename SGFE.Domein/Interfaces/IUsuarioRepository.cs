@@ -6,8 +6,8 @@ namespace SGFE.Domein.Interfaces
     public interface IUsuarioRepository
     {
         Task CreateUsuarioAsync(Usuario entity);
-        Task GetUsuarioByEmailAsync(string email);
-        Task GetUsuarioByIdAsync(int id);
         Task ActualizarUsuarioAsync (Usuario entity);
+        Task<Usuario> GetUsuarioByIdAsync(int id);
+        Task<Usuario> GetUsuarioByEmailAsync(string email);
     }
 }

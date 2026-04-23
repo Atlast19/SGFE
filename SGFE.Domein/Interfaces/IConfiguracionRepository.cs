@@ -5,7 +5,7 @@ namespace SGFE.Domein.Interfaces
 {
     public interface IConfiguracionRepository
     {
-        Task<List<Configuracion>> GetConfiguracion(string SPname);
-        Task UpsetConfiguracion(string SPname);
+        Task<List<Configuracion>> GetConfiguracionAsync(int? empresaId, string clave);
+        Task UpsetConfiguracionAync(int? empresaId, string clave, string valor, string descripcion);
     }
 }

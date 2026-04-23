@@ -22,7 +22,7 @@ namespace SGFE.Percistence.Repository.Cliente
             throw new NotImplementedException();
         }
 
-        public Task DeleteCliente(int Id)
+        public Task DeleteClienteAsync(int Id)
         {
             throw new NotImplementedException();
         }
@@ -32,12 +32,12 @@ namespace SGFE.Percistence.Repository.Cliente
             throw new NotImplementedException();
         }
 
-        public Task GetClienteByEmpresaIdAsync(int EmpresaId)
+        public Task<Domein.Entitys.Cliente> GetClienteByEmpresaIdAsync(int EmpresaId)
         {
             throw new NotImplementedException();
         }
 
-        public Task GetClienteByIdAsync(int ClienteId)
+        public Task<Domein.Entitys.Cliente> GetClienteByIdAsync(int ClienteId)
         {
             throw new NotImplementedException();
         }

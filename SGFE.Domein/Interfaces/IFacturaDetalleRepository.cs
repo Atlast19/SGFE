@@ -8,7 +8,7 @@ namespace SGFE.Domein.Interfaces
         Task CreateFacturaDetalleAsync(FacturaDetalle entity);
         Task UpdateFacturaDetalleAsync (FacturaDetalle entity);
         Task DeleteFacturaDetalleAsync(int IdFacturaDetalle);
-        Task GetFacturaDetalleByFactura(int IdFactura);
+        Task<List<FacturaDetalle>> GetFacturaDetalleByFactura(int IdFactura);
     }
 
 }

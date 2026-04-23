@@ -1,7 +1,7 @@
 ﻿
 namespace SGFE.Domein.Entitys;
 
-public partial class Log
+public class Log
 {
     public int Id { get; set; }
 

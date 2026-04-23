@@ -1,5 +1,4 @@
-﻿
-using SGFE.Domein.Entitys;
+﻿using SGFE.Domein.Entitys;
 
 namespace SGFE.Domein.Interfaces
 {

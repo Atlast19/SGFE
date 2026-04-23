@@ -8,6 +8,7 @@ namespace SGFE.Domein.Interfaces
     {
         Task CrearCertificadoDigitalAsync(CertificadosDigital entoty);
 
-        Task GetEstadoCertificadoDigalAsync(string SPname);
+        Task<CertificadosDigital> GetEstadoCertificadoDigalAsync(int EmpresaID);
     }
 }
+ 
