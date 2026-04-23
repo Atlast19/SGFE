@@ -7,7 +7,7 @@ namespace SGFE.Domein.Interfaces
     {
         Task CreateEmpresaAsync(Empresa entiry);
         Task UpdateEmpresaAsync(Empresa entity);
-        Task<List<Empresa>> GetAllEmpresaAsync(string SPname);
+        Task<List<Empresa>> GetAllEmpresaAsync();
         Task<Empresa> GetEmpresaByIdAsync (int empresaId);
     }
 }

@@ -10,7 +10,7 @@ namespace SGFE.Domein.Interfaces
         Task UpdateClienteAsync (Cliente entity);
         Task<Cliente> GetClienteByEmpresaIdAsync(int EmpresaId);
         Task<Cliente> GetClienteByIdAsync(int ClienteId);
-        Task<List<Cliente>> GetAllClienteAsync(string SPname);
+        Task<List<Cliente>> GetAllClienteAsync();
         Task DeleteClienteAsync(int Id);
 
 

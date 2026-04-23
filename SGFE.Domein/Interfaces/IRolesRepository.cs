@@ -7,6 +7,6 @@ namespace SGFE.Domein.Interfaces
     {
         Task CreateRoleAsync(Roles entity);
         Task<Roles> GetRoleByIdAsync(int RoleId);
-        Task<List<Roles>> GetAllRoleAsync(string SPname);
+        Task<List<Roles>> GetAllRoleAsync();
     }
 }
