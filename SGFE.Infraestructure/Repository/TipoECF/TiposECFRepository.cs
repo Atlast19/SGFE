@@ -19,9 +19,30 @@ namespace SGFE.Percistence.Repository.TipoECF
             _connectionString = _configuration.GetConnectionString("DefaultConnection");
         }
 
-        public Task CrearTiposECFAsync(TiposECF entity)
+        public async Task CrearTiposECFAsync(TiposECF entity)
         {
-            throw new NotImplementedException();
+            try 
+            {
+                _logger.LogInformation("Ejecucion del proceso almacenado sp_TiposECF_Crear");
+                using (SqlConnection connection = new SqlConnection(_connectionString)) 
+                {
+                    using (SqlCommand command = new SqlCommand("sp_TiposECF_Crear", connection)) 
+                    {
+                        command.CommandType = System.Data.CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@Codigo", entity.Codigo);
+                        command.Parameters.AddWithValue("@Descripcion", entity.Descripcion);
+                        command.Parameters.AddWithValue("@Activo", (object)entity.Activo ?? DBNull.Value);
+
+                        await connection.OpenAsync();
+                        await command.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al crear un nuevo TipoECF");
+                throw;
+            }
         }
 
         public async Task<List<TiposECF>> GetAllTiposECFAsync()

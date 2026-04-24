@@ -1,5 +1,4 @@
-﻿
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SGFE.Domein.Entitys;
@@ -137,6 +136,48 @@ namespace SGFE.Percistence.Repository.Usuarios
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al obtener el usuario por ID.");
+                throw;
+            }
+        }
+
+        public async Task<Usuario> LoginAsync(string Email, string PasswordHash)
+        {
+            try 
+            {
+                _logger.LogInformation("Ejecucion del proceso almacenado sp_Usuario_Login");
+
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    using (SqlCommand command = new SqlCommand("sp_Usuario_Login", connection))
+                    {
+                        command.CommandType = System.Data.CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@Email", Email);
+                        command.Parameters.AddWithValue("@PasswordHash", PasswordHash);
+
+                        await connection.OpenAsync();
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                var usuario = new Usuario
+                                {
+                                    Email = reader.GetString(reader.GetOrdinal("Email")),
+                                    PasswordHash = reader.GetString(reader.GetOrdinal("PasswordHash"))
+                                };
+                                return usuario;
+                            }
+                            else
+                            {
+                                _logger.LogWarning("No se encontró un usuario con el email y contraseña proporcionados.");
+                                throw new ArgumentException("No se encontró un usuario con el email y contraseña proporcionados.");
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al iniciar sesión.");
                 throw;
             }
         }

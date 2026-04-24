@@ -44,8 +44,8 @@ namespace SGFE.Percistence.Repository.CertificadosDigitales
                                 CertificadosDigital certificado = new CertificadosDigital
                                 {
                                     Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                                    //Activo = reader.GetString(reader.GetOrdinal("Estado")),
-                                    //FechaVencimiento = reader.IsDBNull(reader.GetOrdinal("FechaExpiracion")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("FechaExpiracion"))
+                                    Activo = reader.IsDBNull(reader.GetOrdinal("Activo")) ? (bool?)null : reader.GetBoolean(reader.GetOrdinal("Activo")),
+                                    FechaVencimiento = reader.IsDBNull(reader.GetOrdinal("FechaExpiracion")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("FechaExpiracion"))
                                 };
                                 return certificado;
                             }

@@ -12,7 +12,7 @@ public partial class CertificadosDigital
 
     public byte[] PasswordEncriptada { get; set; }
 
-    public DateOnly FechaVencimiento { get; set; }
+    public DateTime? FechaVencimiento { get; set; }
 
     public bool? Activo { get; set; }
 

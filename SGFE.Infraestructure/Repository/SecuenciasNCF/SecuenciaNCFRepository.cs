@@ -18,7 +18,8 @@ namespace SGFE.Percistence.Repository.SecuenciasNCF
             _logger = logger;
             _connectionString = _configuration.GetConnectionString("DefaultConnection");
         }
-        public Task<string> GetNextSecuenciaNCFAsync(string SPname)
+
+        public Task<string> GetNextSecuenciaNCFAsync()
         {
             throw new NotImplementedException();
         }
