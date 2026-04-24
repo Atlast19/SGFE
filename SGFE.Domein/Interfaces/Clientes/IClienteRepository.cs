@@ -1,16 +1,17 @@
-﻿
+﻿using SGFE.Domein.Entitys;
 
-using SGFE.Domein.Entitys;
-
-namespace SGFE.Application.Interfaces.Clientes
+namespace SGFE.Domein.Interfaces.Clientes
 {
-    public interface IClienteService
+    public interface IClienteRepository
     {
         Task CreateClienteAsync(Cliente entity);
-        Task UpdateClienteAsync(Cliente entity);
+        Task UpdateClienteAsync (Cliente entity);
         Task<Cliente> GetClienteByEmpresaIdAsync(int EmpresaId);
         Task<Cliente> GetClienteByIdAsync(int ClienteId);
         Task<List<Cliente>> GetAllClienteAsync();
         Task DeleteClienteAsync(int Id);
+
+
+
     }
 }

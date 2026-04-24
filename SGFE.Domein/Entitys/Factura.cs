@@ -43,9 +43,9 @@ public partial class Factura
 
     public virtual Empresa Empresa { get; set; }
 
-    public virtual ICollection<EnviosDGII> EnviosDGIIs { get; set; } = new List<EnviosDGII>();
+    public virtual ICollection<EnvioDGII> EnviosDGIIs { get; set; } = new List<EnvioDGII>();
 
     public virtual ICollection<FacturaDetalle> FacturaDetalles { get; set; } = new List<FacturaDetalle>();
 
-    public virtual TiposECF TipoECF { get; set; }
+    public virtual TipoECF TipoECF { get; set; }
 }

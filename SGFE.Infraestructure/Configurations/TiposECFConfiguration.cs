@@ -7,9 +7,9 @@ using System.Collections.Generic;
 
 namespace SGFE.Domein.Entitys.Configurations
 {
-    public partial class TiposECFConfiguration : IEntityTypeConfiguration<TiposECF>
+    public partial class TiposECFConfiguration : IEntityTypeConfiguration<TipoECF>
     {
-        public void Configure(EntityTypeBuilder<TiposECF> entity)
+        public void Configure(EntityTypeBuilder<TipoECF> entity)
         {
             entity.HasKey(e => e.Id).HasName("PK__TiposECF__3214EC07BC4E39DD");
 
@@ -26,6 +26,6 @@ namespace SGFE.Domein.Entitys.Configurations
             OnConfigurePartial(entity);
         }
 
-        partial void OnConfigurePartial(EntityTypeBuilder<TiposECF> entity);
+        partial void OnConfigurePartial(EntityTypeBuilder<TipoECF> entity);
     }
 }

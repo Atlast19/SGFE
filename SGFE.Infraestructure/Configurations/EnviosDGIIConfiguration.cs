@@ -7,9 +7,9 @@ using System.Collections.Generic;
 
 namespace SGFE.Domein.Entitys.Configurations
 {
-    public partial class EnviosDGIIConfiguration : IEntityTypeConfiguration<EnviosDGII>
+    public partial class EnviosDGIIConfiguration : IEntityTypeConfiguration<EnvioDGII>
     {
-        public void Configure(EntityTypeBuilder<EnviosDGII> entity)
+        public void Configure(EntityTypeBuilder<EnvioDGII> entity)
         {
             entity.HasKey(e => e.Id).HasName("PK__EnviosDG__3214EC076137A979");
 
@@ -39,6 +39,6 @@ namespace SGFE.Domein.Entitys.Configurations
             OnConfigurePartial(entity);
         }
 
-        partial void OnConfigurePartial(EntityTypeBuilder<EnviosDGII> entity);
+        partial void OnConfigurePartial(EntityTypeBuilder<EnvioDGII> entity);
     }
 }

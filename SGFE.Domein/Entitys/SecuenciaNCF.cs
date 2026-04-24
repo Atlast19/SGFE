@@ -27,5 +27,5 @@ public partial class SecuenciaNCF
 
     public virtual Empresa Empresa { get; set; }
 
-    public virtual TiposECF TipoECF { get; set; }
+    public virtual TipoECF TipoECF { get; set; }
 }

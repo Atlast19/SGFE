@@ -1,8 +1,8 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using SGFE.Domein.Interfaces;
 using SGFE.Domein.Entitys;
+using SGFE.Domein.Interfaces.Clientes;
 
 namespace SGFE.Percistence.Repository.Clientes
 {

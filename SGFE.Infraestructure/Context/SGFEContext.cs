@@ -22,7 +22,7 @@ public partial class SGFEContext : DbContext
 
     public virtual DbSet<Empresa> Empresas { get; set; }
 
-    public virtual DbSet<EnviosDGII> EnviosDGIIs { get; set; }
+    public virtual DbSet<EnvioDGII> EnviosDGIIs { get; set; }
 
     public virtual DbSet<Factura> Facturas { get; set; }
 
@@ -30,11 +30,11 @@ public partial class SGFEContext : DbContext
 
     public virtual DbSet<Log> Logs { get; set; }
 
-    public virtual DbSet<Roles> Roles { get; set; }
+    public virtual DbSet<Rol> Roles { get; set; }
 
     public virtual DbSet<SecuenciaNCF> SecuenciaNCFs { get; set; }
 
-    public virtual DbSet<TiposECF> TiposECFs { get; set; }
+    public virtual DbSet<TipoECF> TiposECFs { get; set; }
 
     public virtual DbSet<Usuario> Usuarios { get; set; }
 

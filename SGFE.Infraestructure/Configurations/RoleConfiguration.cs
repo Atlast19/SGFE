@@ -7,9 +7,9 @@ using System.Collections.Generic;
 
 namespace SGFE.Domein.Entitys.Configurations
 {
-    public partial class RoleConfiguration : IEntityTypeConfiguration<Roles>
+    public partial class RoleConfiguration : IEntityTypeConfiguration<Rol>
     {
-        public void Configure(EntityTypeBuilder<Roles> entity)
+        public void Configure(EntityTypeBuilder<Rol> entity)
         {
             entity.HasKey(e => e.Id).HasName("PK__Roles__3214EC07CD8F12EE");
 
@@ -25,6 +25,6 @@ namespace SGFE.Domein.Entitys.Configurations
             OnConfigurePartial(entity);
         }
 
-        partial void OnConfigurePartial(EntityTypeBuilder<Roles> entity);
+        partial void OnConfigurePartial(EntityTypeBuilder<Rol> entity);
     }
 }
