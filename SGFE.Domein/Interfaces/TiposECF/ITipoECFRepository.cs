@@ -1,6 +1,6 @@
 ﻿using SGFE.Domein.Entitys;
 
-namespace SGFE.Domein.Interfaces
+namespace SGFE.Domein.Interfaces.TiposECF
 {
     public interface ITipoECFRepository
     {

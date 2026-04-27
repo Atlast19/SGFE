@@ -1,9 +1,8 @@
-﻿
-using SGFE.Domein.Entitys;
+﻿using SGFE.Domein.Entitys;
 
-namespace SGFE.Domein.Interfaces
+namespace SGFE.Domein.Interfaces.SecuenciasNCF
 {
-    public interface ISecuenciasNCFRepository
+    public interface ISecuenciaNCFRepository
     {
         Task<string> GetNextSecuenciaNCFAsync();
         Task RegistrarSecuenciaAsync(SecuenciaNCF entity);

@@ -1,6 +1,6 @@
 ﻿using SGFE.Application.Interfaces.Facturas;
 using SGFE.Domein.Entitys;
-using SGFE.Domein.Interfaces;
+using SGFE.Domein.Interfaces.Facturas;
 
 namespace SGFE.Application.Services.Facturas
 {

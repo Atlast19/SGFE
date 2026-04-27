@@ -2,11 +2,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SGFE.Domein.Entitys.ReportesEntirys;
-using SGFE.Domein.Interfaces;
+using SGFE.Domein.Interfaces.Reportes;
 
 namespace SGFE.Percistence.Repository.Repostes
 {
-    public class ReposteRepository : IResporteRepository
+    public class ReposteRepository : IReporteRepository
     {
         private readonly IConfiguration _configuration;
         private readonly ILogger<ReposteRepository> _logger;

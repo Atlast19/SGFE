@@ -1,7 +1,6 @@
 ﻿using SGFE.Application.Interfaces.Roles;
 using SGFE.Domein.Entitys;
-using SGFE.Domein.Interfaces;
-
+using SGFE.Domein.Interfaces.Roles;
 
 namespace SGFE.Application.Services.Roles
 {

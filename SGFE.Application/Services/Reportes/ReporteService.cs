@@ -1,14 +1,14 @@
 ﻿using SGFE.Application.Interfaces.Reportes;
 using SGFE.Domein.Entitys.ReportesEntirys;
-using SGFE.Domein.Interfaces;
+using SGFE.Domein.Interfaces.Reportes;
 
 namespace SGFE.Application.Services.Reportes
 {
     public class ReporteService : IReporteService
     {
-        private readonly IResporteRepository _repository;
+        private readonly IReporteRepository _repository;
 
-        public ReporteService(IResporteRepository repository)
+        public ReporteService(IReporteRepository repository)
         {
             _repository = repository;
         }

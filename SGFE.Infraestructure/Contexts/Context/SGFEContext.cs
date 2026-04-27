@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SGFE.Domein.Entitys;
 
-
-namespace SGFE.Domein.Entitys;
+namespace SGFE.Percistence.Contexts.Context;
 
 public partial class SGFEContext : DbContext
 {
@@ -44,18 +44,18 @@ public partial class SGFEContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfiguration(new Configurations.CertificadosDigitaleConfiguration());
-        modelBuilder.ApplyConfiguration(new Configurations.ClienteConfiguration());
-        modelBuilder.ApplyConfiguration(new Configurations.ConfiguracionConfiguration());
-        modelBuilder.ApplyConfiguration(new Configurations.EmpresaConfiguration());
-        modelBuilder.ApplyConfiguration(new Configurations.EnviosDGIIConfiguration());
-        modelBuilder.ApplyConfiguration(new Configurations.FacturaConfiguration());
-        modelBuilder.ApplyConfiguration(new Configurations.FacturaDetalleConfiguration());
-        modelBuilder.ApplyConfiguration(new Configurations.LogConfiguration());
-        modelBuilder.ApplyConfiguration(new Configurations.RoleConfiguration());
-        modelBuilder.ApplyConfiguration(new Configurations.SecuenciaNCFConfiguration());
-        modelBuilder.ApplyConfiguration(new Configurations.TiposECFConfiguration());
-        modelBuilder.ApplyConfiguration(new Configurations.UsuarioConfiguration());
+        modelBuilder.ApplyConfiguration(new Domein.Entitys.Configurations.CertificadosDigitaleConfiguration());
+        modelBuilder.ApplyConfiguration(new Domein.Entitys.Configurations.ClienteConfiguration());
+        modelBuilder.ApplyConfiguration(new Domein.Entitys.Configurations.ConfiguracionConfiguration());
+        modelBuilder.ApplyConfiguration(new Domein.Entitys.Configurations.EmpresaConfiguration());
+        modelBuilder.ApplyConfiguration(new Domein.Entitys.Configurations.EnviosDGIIConfiguration());
+        modelBuilder.ApplyConfiguration(new Domein.Entitys.Configurations.FacturaConfiguration());
+        modelBuilder.ApplyConfiguration(new Domein.Entitys.Configurations.FacturaDetalleConfiguration());
+        modelBuilder.ApplyConfiguration(new Domein.Entitys.Configurations.LogConfiguration());
+        modelBuilder.ApplyConfiguration(new Domein.Entitys.Configurations.RoleConfiguration());
+        modelBuilder.ApplyConfiguration(new Domein.Entitys.Configurations.SecuenciaNCFConfiguration());
+        modelBuilder.ApplyConfiguration(new Domein.Entitys.Configurations.TiposECFConfiguration());
+        modelBuilder.ApplyConfiguration(new Domein.Entitys.Configurations.UsuarioConfiguration());
 
         OnModelCreatingPartial(modelBuilder);
     }

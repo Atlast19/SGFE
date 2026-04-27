@@ -12,29 +12,24 @@ namespace SGFE.Application.Services.Ususarios
         {
             _repository = repository;
         }
-        public Task CreateUsuarioAsync(Usuario entity)
+        public async Task CreateUsuarioAsync(Usuario entity)
         {
-            throw new NotImplementedException();
+            await _repository.CreateUsuarioAsync(entity);
         }
 
-        public Task<Usuario> GetUsuarioByEmailAsync(string email)
+        public async Task<Usuario> GetUsuarioByEmailAsync(string email)
         {
-            throw new NotImplementedException();
+            return await _repository.GetUsuarioByEmailAsync(email);
         }
 
-        public Task<Usuario> GetUsuarioByIdAsync(int id)
+        public async Task<Usuario> GetUsuarioByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _repository.GetUsuarioByIdAsync(id);
         }
 
-        public Task<Usuario> LoginAsync(string Email, string PasswordHash)
+        public async Task UpdateUsuarioAsync(Usuario entity)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task UpdateUsuarioAsync(Usuario entity)
-        {
-            throw new NotImplementedException();
+            await _repository.UpdateUsuarioAsync(entity);
         }
     }
 }

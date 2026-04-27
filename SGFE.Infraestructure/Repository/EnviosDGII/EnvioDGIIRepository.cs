@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using SGFE.Domein.Interfaces;
+using SGFE.Domein.Interfaces.EnviosDGII;
 
 namespace SGFE.Percistence.Repository.EnviosDGII
 {
-    public class EnvioDGIIRepository : IEnviosDGIIRepository
+    public class EnvioDGIIRepository : IEnvioDGIIRepository
     {
         private readonly IConfiguration _configuration;
         private readonly ILogger<EnvioDGIIRepository> _logger;

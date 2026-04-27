@@ -1,6 +1,6 @@
 ﻿using SGFE.Application.Interfaces.TiposECF;
 using SGFE.Domein.Entitys;
-using SGFE.Domein.Interfaces;
+using SGFE.Domein.Interfaces.TiposECF;
 
 namespace SGFE.Application.Services.TiposECF
 {
@@ -12,14 +12,14 @@ namespace SGFE.Application.Services.TiposECF
         {
             _repository = repository;
         }
-        public Task CrearTiposECFAsync(TipoECF entity)
+        public async Task CrearTiposECFAsync(TipoECF entity)
         {
-            throw new NotImplementedException();
+            await _repository.CrearTiposECFAsync(entity);
         }
 
-        public Task<List<TipoECF>> GetAllTiposECFAsync()
+        public async Task<List<TipoECF>> GetAllTiposECFAsync()
         {
-            throw new NotImplementedException();
+            return await _repository.GetAllTiposECFAsync();
         }
     }
 }

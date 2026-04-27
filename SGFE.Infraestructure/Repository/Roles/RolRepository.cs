@@ -3,7 +3,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SGFE.Domein.Entitys;
-using SGFE.Domein.Interfaces;
+using SGFE.Domein.Interfaces.Roles;
 
 namespace SGFE.Percistence.Repository.Roles
 {

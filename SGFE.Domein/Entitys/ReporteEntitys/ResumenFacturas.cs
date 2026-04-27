@@ -1,6 +1,4 @@
-﻿
-
-namespace SGFE.Domein.Entitys.ReportesEntirys
+﻿namespace SGFE.Domein.Entitys.ReportesEntirys
 {
     public class ResumenFacturas
     {

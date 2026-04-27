@@ -2,11 +2,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SGFE.Domein.Entitys;
-using SGFE.Domein.Interfaces;
+using SGFE.Domein.Interfaces.SecuenciasNCF;
 
 namespace SGFE.Percistence.Repository.SecuenciasNCF
 {
-    public class SecuenciaNCFRepository : ISecuenciasNCFRepository
+    public class SecuenciaNCFRepository : ISecuenciaNCFRepository
     {
         private readonly IConfiguration _configuration;
         private readonly ILogger<SecuenciaNCFRepository> _logger;

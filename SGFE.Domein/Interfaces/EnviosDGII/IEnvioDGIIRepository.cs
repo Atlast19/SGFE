@@ -1,7 +1,6 @@
-﻿
-namespace SGFE.Domein.Interfaces
+﻿namespace SGFE.Domein.Interfaces.EnviosDGII
 {
-    public interface IEnviosDGIIRepository
+    public interface IEnvioDGIIRepository
     {
         Task RegistrarEnvioDGIIAsync(int facturaId, string trackId, string requestXml, string estadoEnvio);
 

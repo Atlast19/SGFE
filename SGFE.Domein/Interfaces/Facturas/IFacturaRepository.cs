@@ -1,7 +1,6 @@
-﻿
-using SGFE.Domein.Entitys;
+﻿using SGFE.Domein.Entitys;
 
-namespace SGFE.Domein.Interfaces
+namespace SGFE.Domein.Interfaces.Facturas
 {
     public interface IFacturaRepository
     {

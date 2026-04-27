@@ -8,6 +8,7 @@ namespace SGFE.Domein.Interfaces.Usuarios
         Task UpdateUsuarioAsync (Usuario entity);
         Task<Usuario> GetUsuarioByIdAsync(int id);
         Task<Usuario> GetUsuarioByEmailAsync(string email);
-        Task<Usuario> LoginAsync(string Email, string PasswordHash);
+        Task<List<string>> GetRolesByUsuarioIdAsync(int usuarioId);
+        Task<Usuario> GetEmailForLogin(string email);
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SGFE.Domein.Entitys;
 using SGFE.Domein.Interfaces.Usuarios;
+using System.Data;
 
 namespace SGFE.Percistence.Repository.Usuarios
 {
@@ -52,6 +53,77 @@ namespace SGFE.Percistence.Repository.Usuarios
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al crear el usuario.");
+                throw;
+            }
+        }
+
+        public async Task<Usuario> GetEmailForLogin(string email)
+        {
+            try 
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    using (SqlCommand command = new SqlCommand("sp_GetUserByEmail_Login", connection))
+                    {
+                        command.CommandType = System.Data.CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@Email", email);
+                        await connection.OpenAsync();
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                var usuario = new Usuario
+                                {
+                                    Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                    Nombre = reader.GetString(reader.GetOrdinal("Nombre")),
+                                    Email = reader.GetString(reader.GetOrdinal("Email")),
+                                    PasswordHash = reader.GetString(reader.GetOrdinal("PasswordHash"))
+                                };
+                                return usuario;
+                            }
+                            else
+                            {
+                                _logger.LogWarning("No se encontró un usuario con el email proporcionado.");
+                                throw new ArgumentException("No se encontró un usuario con el email proporcionado.");
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener el email para login.");
+                throw;
+            }
+        }
+
+        public async Task<List<string>> GetRolesByUsuarioIdAsync(int usuarioId)
+        {
+            try 
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    using (SqlCommand command = new SqlCommand("sp_Usuario_ObtenerPorRolId_Login", connection))
+                    {
+                        command.CommandType = System.Data.CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@UsuarioId", usuarioId);
+                        await connection.OpenAsync();
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            var roles = new List<string>();
+                            while (await reader.ReadAsync())
+                            {
+                                var role = reader.GetString(reader.GetOrdinal("RoleName"));
+                                roles.Add(role);
+                            }
+                            return roles;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener los roles por ID de usuario.");
                 throw;
             }
         }
@@ -136,48 +208,6 @@ namespace SGFE.Percistence.Repository.Usuarios
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al obtener el usuario por ID.");
-                throw;
-            }
-        }
-
-        public async Task<Usuario> LoginAsync(string Email, string PasswordHash)
-        {
-            try 
-            {
-                _logger.LogInformation("Ejecucion del proceso almacenado sp_Usuario_Login");
-
-                using (SqlConnection connection = new SqlConnection(_connectionString))
-                {
-                    using (SqlCommand command = new SqlCommand("sp_Usuario_Login", connection))
-                    {
-                        command.CommandType = System.Data.CommandType.StoredProcedure;
-                        command.Parameters.AddWithValue("@Email", Email);
-                        command.Parameters.AddWithValue("@PasswordHash", PasswordHash);
-
-                        await connection.OpenAsync();
-                        using (var reader = await command.ExecuteReaderAsync())
-                        {
-                            if (await reader.ReadAsync())
-                            {
-                                var usuario = new Usuario
-                                {
-                                    Email = reader.GetString(reader.GetOrdinal("Email")),
-                                    PasswordHash = reader.GetString(reader.GetOrdinal("PasswordHash"))
-                                };
-                                return usuario;
-                            }
-                            else
-                            {
-                                _logger.LogWarning("No se encontró un usuario con el email y contraseña proporcionados.");
-                                throw new ArgumentException("No se encontró un usuario con el email y contraseña proporcionados.");
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error al iniciar sesión.");
                 throw;
             }
         }

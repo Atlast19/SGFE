@@ -12,4 +12,7 @@
   <Folder Name="/Infraestructure/">
     <Project Path="SGFE.Infraestructure/SGFE.Percistence.csproj" />
   </Folder>
+  <Folder Name="/Test/">
+    <Project Path="SGFE.Test/SGFE.Test.csproj" Id="71e463b8-e9a0-4416-a9a2-969d05254268" />
+  </Folder>
 </Solution>
