@@ -3,7 +3,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SGFE.Domein.Entitys;
 using SGFE.Domein.Interfaces.Usuarios;
-using System.Data;
 
 namespace SGFE.Percistence.Repository.Usuarios
 {

@@ -15,6 +15,10 @@ namespace SGFE.Domein.Entitys.Configurations
 
             entity.ToTable("EnviosDGII");
 
+            entity.HasIndex(e => e.FacturaId, "IX_EnviosDGII_FacturaId");
+
+            entity.HasIndex(e => e.TrackId, "IX_EnviosDGII_TrackId");
+
             entity.Property(e => e.CodigoRespuesta).HasMaxLength(10);
             entity.Property(e => e.EstadoEnvio)
                 .IsRequired()

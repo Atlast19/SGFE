@@ -15,6 +15,8 @@ namespace SGFE.Domein.Entitys.Configurations
 
             entity.ToTable("FacturaDetalle");
 
+            entity.HasIndex(e => e.FacturaId, "IX_FacturaDetalle_FacturaId");
+
             entity.Property(e => e.Cantidad).HasColumnType("decimal(18, 4)");
             entity.Property(e => e.Descripcion)
                 .IsRequired()

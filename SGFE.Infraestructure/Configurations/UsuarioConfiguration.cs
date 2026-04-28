@@ -13,12 +13,13 @@ namespace SGFE.Domein.Entitys.Configurations
         {
             entity.HasKey(e => e.Id).HasName("PK__Usuarios__3214EC07F0836CFA");
 
-            entity.HasIndex(e => e.ApiKey, "UQ__Usuarios__A4E6E1864BAA108F").IsUnique();
+            entity.HasIndex(e => e.EmpresaId, "IX_Usuarios_EmpresaId");
+
+            entity.HasIndex(e => e.RolId, "IX_Usuarios_RolId");
 
             entity.HasIndex(e => e.Email, "UQ__Usuarios__A9D105346D8ACA49").IsUnique();
 
             entity.Property(e => e.Activo).HasDefaultValue(true);
-            entity.Property(e => e.ApiKey).HasMaxLength(64);
             entity.Property(e => e.Email)
                 .IsRequired()
                 .HasMaxLength(100);

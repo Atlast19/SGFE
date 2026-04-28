@@ -13,6 +13,10 @@ namespace SGFE.Domein.Entitys.Configurations
         {
             entity.HasKey(e => e.Id).HasName("PK__Logs__3214EC074828AD99");
 
+            entity.HasIndex(e => e.EmpresaId, "IX_Logs_EmpresaId");
+
+            entity.HasIndex(e => e.Fecha, "IX_Logs_Fecha");
+
             entity.Property(e => e.Fecha).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.IP).HasMaxLength(45);
             entity.Property(e => e.Mensaje)

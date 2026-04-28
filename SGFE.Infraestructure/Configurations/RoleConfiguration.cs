@@ -13,11 +13,11 @@ namespace SGFE.Domein.Entitys.Configurations
         {
             entity.HasKey(e => e.Id).HasName("PK__Roles__3214EC07CD8F12EE");
 
-            entity.HasIndex(e => e.Nombre, "UQ__Roles__75E3EFCF48305C5F").IsUnique();
-
+            entity.Property(e => e.Activo).HasDefaultValue(true);
             entity.Property(e => e.Descripcion).HasMaxLength(200);
             entity.Property(e => e.FechaActualizado).HasDefaultValueSql("(getdate())");
-            entity.Property(e => e.FechaCreacion).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.FechaCreacion).HasDefaultValueSql("(NULL)");
+            entity.Property(e => e.FechaEliminado).HasDefaultValueSql("(NULL)");
             entity.Property(e => e.Nombre)
                 .IsRequired()
                 .HasMaxLength(50);

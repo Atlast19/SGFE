@@ -4,7 +4,7 @@ using SGFE.Domein.Interfaces.Usuarios;
 
 namespace SGFE.Application.Services.Ususarios
 {
-    public class UsuarioService : IUsuaroService
+    public class UsuarioService : IUsuarioService
     {
         private readonly IUsuarioRepository _repository;
 

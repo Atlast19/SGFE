@@ -3,7 +3,7 @@ using SGFE.Domein.Entitys;
 
 namespace SGFE.Application.Interfaces.Usuarios
 {
-    public interface IUsuaroService
+    public interface IUsuarioService
     {
         Task CreateUsuarioAsync(Usuario entity);
         Task UpdateUsuarioAsync(Usuario entity);

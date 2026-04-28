@@ -13,6 +13,10 @@ namespace SGFE.Domein.Entitys.Configurations
         {
             entity.HasKey(e => e.Id).HasName("PK__Clientes__3214EC078FBC5313");
 
+            entity.HasIndex(e => e.Documento, "IX_Clientes_Documento");
+
+            entity.HasIndex(e => e.EmpresaId, "IX_Clientes_EmpresaId");
+
             entity.HasIndex(e => new { e.EmpresaId, e.Documento }, "UQ_Cliente_Empresa_Documento").IsUnique();
 
             entity.Property(e => e.Activo).HasDefaultValue(true);
