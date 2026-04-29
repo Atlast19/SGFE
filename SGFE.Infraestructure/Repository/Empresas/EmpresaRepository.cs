@@ -1,5 +1,4 @@
-﻿
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SGFE.Domein.Entitys;
@@ -20,7 +19,7 @@ namespace SGFE.Percistence.Repository.Empresas
             _connectionString = _configuration.GetConnectionString("DefaultConnection");
         }
 
-        public async Task CreateEmpresaAsync(Empresa entiry)
+        public async Task<Empresa> CreateEmpresaAsync(Empresa entity)
         {
             try 
             {
@@ -32,38 +31,37 @@ namespace SGFE.Percistence.Repository.Empresas
                     {
                         command.CommandType = System.Data.CommandType.StoredProcedure;
 
-                        command.Parameters.AddWithValue("@RNC", entiry.RNC);
-                        command.Parameters.AddWithValue("@Nombre", entiry.Nombre);
-                        command.Parameters.AddWithValue("@NombreComercial", entiry.NombreComercial);
-                        command.Parameters.AddWithValue("@Direccion", entiry.Direccion);
-                        command.Parameters.AddWithValue("@Telefono", entiry.Telefono);
-                        command.Parameters.AddWithValue("@Email", entiry.Email);
-                        command.Parameters.AddWithValue("@Ambiente", entiry.Ambiente);
-                        command.Parameters.AddWithValue("@Activo", entiry.Activo);
+                        command.Parameters.AddWithValue("@RNC", entity.RNC);
+                        command.Parameters.AddWithValue("@Nombre", entity.Nombre);
+                        command.Parameters.AddWithValue("@NombreComercial", entity.NombreComercial);
+                        command.Parameters.AddWithValue("@Direccion", entity.Direccion);
+                        command.Parameters.AddWithValue("@Telefono", entity.Telefono);
+                        command.Parameters.AddWithValue("@Email", entity.Email);
 
                         await connection.OpenAsync();
                         var rowsAffected = await command.ExecuteNonQueryAsync();
 
                         if (rowsAffected > 0)
                         {
-                            _logger.LogInformation("Empresa creada exitosamente con RNC: {RNC}", entiry.RNC);
+                            _logger.LogInformation("Empresa creada exitosamente con RNC: {RNC}", entity.RNC);
 
                             var empresaCreada = new Empresa
                             {
-                                RNC = entiry.RNC,
-                                Nombre = entiry.Nombre,
-                                NombreComercial = entiry.NombreComercial,
-                                Direccion = entiry.Direccion,
-                                Telefono = entiry.Telefono,
-                                Email = entiry.Email,
-                                Ambiente = entiry.Ambiente,
-                                Activo = entiry.Activo
+                                Id = entity.Id,
+                                RNC = entity.RNC,
+                                Nombre = entity.Nombre,
+                                NombreComercial = entity.NombreComercial,
+                                Direccion = entity.Direccion,
+                                Telefono = entity.Telefono,
+                                Email = entity.Email
                             };
+
+                            return empresaCreada;
                         }
                         else
                         {
-                            _logger.LogWarning("No se pudo crear la empresa con RNC: {RNC}", entiry.RNC);
-                            throw new ArgumentException("No se pudo crear la empresa con RNC: " + entiry.RNC);
+                            _logger.LogWarning("No se pudo crear la empresa con RNC: {RNC}", entity.RNC);
+                            return null;
                         }
                     }
                 }
@@ -73,6 +71,45 @@ namespace SGFE.Percistence.Repository.Empresas
                 _logger.LogError(ex, "Error al crear la empresa");
                 throw;
             }
+        }
+
+        public async Task<Empresa> DeleteEmpresaAsync(int empresaId)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString)) 
+                {
+                    using (SqlCommand command = new SqlCommand("sp_Empresa_Eliminar", connection)) 
+                    {
+                        command.CommandType = System.Data.CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@Id", empresaId);
+
+                        await connection.OpenAsync();
+
+                        var rowaffected = await command.ExecuteNonQueryAsync();
+
+                        if (rowaffected > 0)
+                        {
+                            _logger.LogInformation("Empresa desactivada correctamente");
+
+                            return new Empresa
+                            {
+                                Id = empresaId
+                            };
+                        }
+                        else 
+                        {
+                            _logger.LogWarning("No se pudo desactivar la empresa");
+                            return null;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex) 
+            {
+                _logger.LogError(ex, "Error al desactivar la empresa");
+                throw;
+            };
         }
 
         public async Task<List<Empresa>> GetAllEmpresaAsync()
@@ -101,16 +138,15 @@ namespace SGFE.Percistence.Repository.Empresas
                                     NombreComercial = reader.GetString(reader.GetOrdinal("NombreComercial")),
                                     Direccion = reader.GetString(reader.GetOrdinal("Direccion")),
                                     Telefono = reader.GetString(reader.GetOrdinal("Telefono")),
-                                    Email = reader.GetString(reader.GetOrdinal("Email")),
-                                    Ambiente = reader.GetString(reader.GetOrdinal("Ambiente")),
-                                    Activo = reader.GetBoolean(reader.GetOrdinal("Activo"))
+                                    Email = reader.GetString(reader.GetOrdinal("Email"))
                                 };
                                 empresas.Add(empresa);
                             }
+
                             if (!empresas.Any()) 
                             {
                                 _logger.LogInformation("No se encontraron empresas en la base de datos");
-                                throw new ArgumentException("No se encontraron empresas en la base de datos");
+                                return null;
                             }
 
                             _logger.LogInformation("Se obtuvieron {Count} empresas de la base de datos", empresas.Count);
@@ -122,7 +158,7 @@ namespace SGFE.Percistence.Repository.Empresas
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al obtener la lista de empresas");
-                throw;
+                return new List<Empresa>();
             }
         }
 
@@ -152,9 +188,7 @@ namespace SGFE.Percistence.Repository.Empresas
                                     NombreComercial = reader.GetString(reader.GetOrdinal("NombreComercial")),
                                     Direccion = reader.GetString(reader.GetOrdinal("Direccion")),
                                     Telefono = reader.GetString(reader.GetOrdinal("Telefono")),
-                                    Email = reader.GetString(reader.GetOrdinal("Email")),
-                                    Ambiente = reader.GetString(reader.GetOrdinal("Ambiente")),
-                                    Activo = reader.GetBoolean(reader.GetOrdinal("Activo"))
+                                    Email = reader.GetString(reader.GetOrdinal("Email"))
                                 };
                                 _logger.LogInformation("Empresa con ID: {EmpresaId} obtenida exitosamente", empresaId);
                                 return empresa;
@@ -162,7 +196,7 @@ namespace SGFE.Percistence.Repository.Empresas
                             else 
                             {
                                 _logger.LogWarning("No se encontró la empresa con ID: {EmpresaId}", empresaId);
-                                throw new ArgumentException($"No se encontró la empresa con ID: {empresaId}");
+                                return null;
                             }
                         }
                     }
@@ -175,43 +209,40 @@ namespace SGFE.Percistence.Repository.Empresas
             }
         }
 
-        public async Task UpdateEmpresaAsync(Empresa entity)
+        public async Task<Empresa> UpdateEmpresaAsync(Empresa entity)
         {
             try
             {
                 _logger.LogInformation("Ejecucion del proceso almacenado sp_Empresa_Actualizar con ID: {EmpresaId}", entity.Id);
-
-                    using (SqlConnection connection = new SqlConnection(_connectionString)) 
+                
+                using (SqlConnection connection = new SqlConnection(_connectionString)) 
+                {
+                    using (SqlCommand command = new SqlCommand("sp_Empresa_Actualizar", connection)) 
                     {
-                        using (SqlCommand command = new SqlCommand("sp_Empresa_Actualizar", connection)) 
+                        command.CommandType = System.Data.CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@Id", entity.Id);
+                        command.Parameters.AddWithValue("@RNC", entity.RNC);
+                        command.Parameters.AddWithValue("@Nombre", entity.Nombre);
+                        command.Parameters.AddWithValue("@NombreComercial", entity.NombreComercial);
+                        command.Parameters.AddWithValue("@Direccion", entity.Direccion);
+                        command.Parameters.AddWithValue("@Telefono", entity.Telefono);
+                        command.Parameters.AddWithValue("@Email", entity.Email);
+                        
+                        await connection.OpenAsync();
+                        var rowsAffected = await command.ExecuteNonQueryAsync();
+                        
+                        if (rowsAffected > 0)
                         {
-                            command.CommandType = System.Data.CommandType.StoredProcedure;
-    
-                            command.Parameters.AddWithValue("@Id", entity.Id);
-                            command.Parameters.AddWithValue("@RNC", entity.RNC);
-                            command.Parameters.AddWithValue("@Nombre", entity.Nombre);
-                            command.Parameters.AddWithValue("@NombreComercial", entity.NombreComercial);
-                            command.Parameters.AddWithValue("@Direccion", entity.Direccion);
-                            command.Parameters.AddWithValue("@Telefono", entity.Telefono);
-                            command.Parameters.AddWithValue("@Email", entity.Email);
-                            command.Parameters.AddWithValue("@Ambiente", entity.Ambiente);
-                            command.Parameters.AddWithValue("@Activo", entity.Activo);
-    
-                            await connection.OpenAsync();
-                            var rowsAffected = await command.ExecuteNonQueryAsync();
-    
-                            if (rowsAffected > 0)
-                            {
-                                _logger.LogInformation("Empresa con ID: {EmpresaId} actualizada exitosamente", entity.Id);
-                                
-                            }
-                            else
-                            {
-                                _logger.LogWarning("No se pudo actualizar la empresa con ID: {EmpresaId}", entity.Id);
-                                throw new ArgumentException($"No se pudo actualizar la empresa con ID: {entity.Id}");
-                            }
+                            _logger.LogInformation("Empresa con ID: {EmpresaId} actualizada exitosamente", entity.Id);
+                            return entity;
+                        }
+                        else
+                        {
+                            _logger.LogWarning("No se pudo actualizar la empresa con ID: {EmpresaId}", entity.Id);
+                            return null;
                         }
                     }
+                }
             }
             catch (Exception ex)
             {

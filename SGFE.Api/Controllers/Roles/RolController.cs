@@ -18,75 +18,82 @@ namespace SGFE.Api.Controllers.Roles
         [HttpPost("CreateRolAsync")]
         public async Task<IActionResult> CreateRolAsync([FromBody] CreateRolModel model)
         {
-            try
+            var result = await _servicer.CreateRoleAsync(model);
+
+            if (result == null) 
             {
-                var roles = await _servicer.CreateRoleAsync(model);
-                return Ok(roles);
+                return NotFound(new 
+                {
+                    message = "No se pudo crear el rol"
+                });
             }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+
+            return Ok(result);
+            
         }
 
         [HttpGet("GetAllRolesAsync")]
         public async Task<IActionResult> GetAllRolesAsync()
         {
-            try
+            var result = await _servicer.GetAllRoleAsync();
+
+            if (result == null)
             {
-                var roles = await _servicer.GetAllRoleAsync();
-                return Ok(roles);
+                return NotFound(new
+                {
+                    message = "No se encontraron datos en la base de datos"
+                });
             }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+
+            return Ok(result);
         }
 
         [HttpGet("GetRolByIdAsync/{roleId}")]
         public async Task<IActionResult> GetRoleByIdAsync(int roleId)
         {
-            try
+            var result = await _servicer.GetRoleByIdAsync(roleId);
+
+            if (result == null)
             {
-                var role = await _servicer.GetRoleByIdAsync(roleId);
-                if (role == null)
-                    return NotFound();
-                return Ok(role);
+                return NotFound(new
+                {
+                    message = $"No se encontró el rol con ID: {roleId}"
+                });
             }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+
+            return Ok(result);
         }
 
         [HttpDelete("DeleteRolAsync/{roleId}")]
         public async Task<IActionResult> DeleteRoleAsync(int roleId)
         {
-            try
+            var result = await _servicer.DeleteRolAsync(roleId);
+
+            if (result == null)
             {
-                var role = await _servicer.DeleteRolAsync(roleId);
-                if (role == null)
-                    return NotFound();
-                return Ok(role);
+                return NotFound(new
+                {
+                    message = "No se encontró el rol con ID: {RoleId} ", roleId
+                });
             }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+
+            return Ok(result);
         }
 
         [HttpPut("UpdateRoleAsync")]
         public async Task<IActionResult> UpdateRoleAsync([FromBody] UpdateRolModel model) 
         {
-            try
+            var result = await _servicer.UpdateRolAsync(model);
+
+            if (result == null)
             {
-                await _servicer.UpdateRolAsync(model);
-                return Ok();
+                return NotFound(new
+                {
+                    message = $"No se pudo actualizar el rol con ID: {model.Id}"
+                });
             }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+
+            return Ok(result);
         }
     }
 }

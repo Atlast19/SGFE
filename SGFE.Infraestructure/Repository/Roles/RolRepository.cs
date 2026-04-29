@@ -1,5 +1,4 @@
-﻿
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SGFE.Domein.Entitys;
@@ -50,7 +49,7 @@ namespace SGFE.Percistence.Repository.Roles
                         else
                         {
                             _logger.LogWarning("No se pudo crear el rol");
-                            throw new ArgumentException("No se pudo crear el rol");
+                            return null;
                         }
                     }
                 }
@@ -64,7 +63,8 @@ namespace SGFE.Percistence.Repository.Roles
 
         public async Task<Rol> DeleteRolAsync(int RoleId)
         {
-            try {
+            try 
+            {
                 using (SqlConnection connection = new SqlConnection(_connectionString)) 
                 {
                     using (SqlCommand command = new SqlCommand("sp_Role_Desactivar", connection)) 
@@ -72,24 +72,21 @@ namespace SGFE.Percistence.Repository.Roles
                         command.CommandType = System.Data.CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@Id", RoleId);
                         await connection.OpenAsync();
-                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                        var rowsAffected = await command.ExecuteNonQueryAsync();
+
+                        if (rowsAffected > 0)
                         {
-                            if (await reader.ReadAsync())
+                            _logger.LogInformation("Rol desactivado exitosamente");
+                            var rol = new Rol
                             {
-                                var rol = new Rol
-                                {
-                                    Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                                    Nombre = reader.GetString(reader.GetOrdinal("Nombre")),
-                                    Descripcion = reader.GetString(reader.GetOrdinal("Descripcion"))
-                                };
-                                _logger.LogInformation("Rol desactivado exitosamente");
-                                return rol;
-                            }
-                            else
-                            {
-                                _logger.LogWarning("No se encontró el rol con ID: {RoleId}", RoleId);
-                                throw new ArgumentException($"No se encontró el rol con ID: {RoleId}");
-                            }
+                                Id = RoleId
+                            };
+                            return rol;
+                        }
+                        else
+                        {
+                            _logger.LogWarning("No se encontró el rol con ID: {RoleId}", RoleId);
+                            return null;
                         }
                     }
                 }
@@ -117,7 +114,8 @@ namespace SGFE.Percistence.Repository.Roles
                         using (SqlDataReader reader = await command.ExecuteReaderAsync()) 
                         {
                             var rolesList = new List<Rol>();
-                            while (await reader.ReadAsync()) 
+
+                            if (await reader.ReadAsync())
                             {
                                 var rol = new Rol
                                 {
@@ -126,9 +124,15 @@ namespace SGFE.Percistence.Repository.Roles
                                     Descripcion = reader.GetString(reader.GetOrdinal("Descripcion"))
                                 };
                                 rolesList.Add(rol);
+
+                                _logger.LogInformation("Roles obtenidos exitosamente");
+                                return rolesList;
                             }
-                            _logger.LogInformation("Roles obtenidos exitosamente");
-                            return rolesList;
+                            else 
+                            {
+                                _logger.LogWarning("No se encontraron datos en la base de datos");
+                                return null;
+                            }
                         }
                     }
                 }
@@ -169,7 +173,7 @@ namespace SGFE.Percistence.Repository.Roles
                             else
                             {
                                 _logger.LogWarning("No se encontró el rol con ID: {RoleId}", RoleId);
-                                throw new ArgumentException($"No se encontró el rol con ID: {RoleId}");
+                                return null;
                             }
                         }
                     }
@@ -196,6 +200,7 @@ namespace SGFE.Percistence.Repository.Roles
                         command.Parameters.AddWithValue("@Descripcion", entity.Descripcion);
                         await connection.OpenAsync();
                         var rowsAffected = await command.ExecuteNonQueryAsync();
+
                         if (rowsAffected > 0) 
                         {
                             _logger.LogInformation("Rol actualizado exitosamente");
@@ -204,7 +209,7 @@ namespace SGFE.Percistence.Repository.Roles
                         else 
                         {
                             _logger.LogWarning("No se pudo actualizar el rol con ID: {RoleId}", entity.Id);
-                            throw new ArgumentException($"No se pudo actualizar el rol con ID: {entity.Id}");
+                            return null;
                         }
                     }
                 }

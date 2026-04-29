@@ -1,13 +1,16 @@
-﻿
-using SGFE.Domein.Entitys;
+﻿using SGFE.Application.Models.Usuarios;
 
 namespace SGFE.Application.Interfaces.Usuarios
 {
     public interface IUsuarioService
     {
-        Task CreateUsuarioAsync(Usuario entity);
-        Task UpdateUsuarioAsync(Usuario entity);
-        Task<Usuario> GetUsuarioByIdAsync(int id);
-        Task<Usuario> GetUsuarioByEmailAsync(string email);
+        Task<CreateUsuarioModel> CreateUsuarioAsync(CreateUsuarioModel model);
+        Task<GetUsuarioModel> UpdateUsuarioAsync(UpdateUsuarioModel entity);
+        Task<GetUsuarioModel> GetUsuarioByIdAsync(int id);
+        Task<GetUsuarioModel> GetUsuarioByEmailAsync(string email);
+        Task<List<GetUsuarioModel>> GetAllUsuarioAsync();
+
+        Task<List<string>> GetRolesByUsuarioIdAsync(int usuarioId);
+        Task<GetUsuarioModel> GetEmailForLogin(string email);
     }
 }

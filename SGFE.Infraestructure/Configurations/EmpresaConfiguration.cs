@@ -16,21 +16,18 @@ namespace SGFE.Domein.Entitys.Configurations
             entity.HasIndex(e => e.RNC, "UQ__Empresas__CAFF69508355E5C9").IsUnique();
 
             entity.Property(e => e.Activo).HasDefaultValue(true);
-            entity.Property(e => e.Ambiente)
-                .HasMaxLength(10)
-                .HasDefaultValue("Prueba");
-            entity.Property(e => e.Direccion).HasMaxLength(200);
-            entity.Property(e => e.Email).HasMaxLength(100);
-            entity.Property(e => e.FechaActualizacion).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.Direccion).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.Email).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.FechaActualizacion).HasDefaultValueSql("(NULL)");
             entity.Property(e => e.FechaCreacion).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.Nombre)
                 .IsRequired()
                 .HasMaxLength(100);
-            entity.Property(e => e.NombreComercial).HasMaxLength(100);
+            entity.Property(e => e.NombreComercial).IsRequired().HasMaxLength(100);
             entity.Property(e => e.RNC)
                 .IsRequired()
                 .HasMaxLength(11);
-            entity.Property(e => e.Telefono).HasMaxLength(20);
+            entity.Property(e => e.Telefono).IsRequired().HasMaxLength(20);
 
             OnConfigurePartial(entity);
         }

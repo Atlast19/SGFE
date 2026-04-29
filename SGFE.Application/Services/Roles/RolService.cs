@@ -14,7 +14,7 @@ namespace SGFE.Application.Services.Roles
         {
             _repository = repository;
         }
-        public async Task<GetRolModel> CreateRoleAsync(CreateRolModel model)
+        public async Task<CreateRolModel> CreateRoleAsync(CreateRolModel model)
         {
            var RolEntity = new Rol
             {
@@ -24,7 +24,10 @@ namespace SGFE.Application.Services.Roles
 
             var rol = await _repository.CreateRoleAsync(RolEntity);
 
-            return new GetRolModel
+            if (rol == null)
+                return null;
+
+            return new CreateRolModel
             {
                 Nombre = rol.Nombre,
                 Descripcion = rol.Descripcion
@@ -49,6 +52,9 @@ namespace SGFE.Application.Services.Roles
         public async Task<List<GetRolModel>> GetAllRoleAsync()
         {
             var roles = await _repository.GetAllRoleAsync();
+
+            if (roles == null)
+                return null;
 
             return roles.Select(rol => new GetRolModel
             {
@@ -77,14 +83,19 @@ namespace SGFE.Application.Services.Roles
         {
             var RolEntity = new Rol
             {
+                Id = model.Id,
                 Nombre = model.Nombre,
                 Descripcion = model.Descripcion
             };
 
-            var rol = await _repository.CreateRoleAsync(RolEntity);
+            var rol = await _repository.UpdateRolAsync(RolEntity);
+
+            if (rol == null)
+                return null;
 
             return new GetRolModel
             {
+                Id = rol.Id,
                 Nombre = rol.Nombre,
                 Descripcion = rol.Descripcion
             };
