@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SGFE.Application.Interfaces.Usuarios;
 using SGFE.Application.Models.Usuarios;
+using SGFE.Application.Services.AuthServices;
 
 namespace SGFE.Api.Controllers.Usuarios
 {
@@ -9,10 +10,12 @@ namespace SGFE.Api.Controllers.Usuarios
     public class UsuarioController : ControllerBase
     {
         private readonly IUsuarioService _service;
+        private readonly AuthService _auth;
 
-        public UsuarioController(IUsuarioService service)
+        public UsuarioController(IUsuarioService service, AuthService auth)
         {
             _service = service;
+            _auth = auth;
         }
 
         [HttpPost("CreateUsuarioAsync")]
@@ -77,33 +80,19 @@ namespace SGFE.Api.Controllers.Usuarios
             return Ok(usuario);
         }
 
-        [HttpGet("GetRolesByUsuarioIdAsync/{usuarioId}")]
-        public async Task<IActionResult> GetRolesByUsuarioIdAsync(int usuarioId)
+        [HttpDelete("DeleteUsuarioAsync/{Id}")]
+        public async Task<IActionResult> DeleteUsuarioAsync(int Id) 
         {
-            var roles = await _service.GetRolesByUsuarioIdAsync(usuarioId);
+            var result = await _service.DeleteUsuarioAsync(Id);
 
-            if (roles == null || roles.Count == 0)
+            if (result == null) 
             {
                 return NotFound(new 
                 {
-                    message = $"No se encontro ningun usuario con el Rol ID: {usuarioId}"
+                    message = $"No se pudo eliminar el usuadio del ID: {Id}"
                 });
             }
-            return Ok(roles);
-        }
-
-        [HttpGet("GetUsuarioByEmailForLogin/{email}")]
-        public async Task<IActionResult> GetUsuarioByEmailForLogin(string email)
-        {
-            var usuario = await _service.GetEmailForLogin(email);
-            if (usuario == null)
-            {
-                return NotFound(new 
-                {
-                    message = $"No se encontro el Email: {email}"
-                });
-            }
-            return Ok(usuario);
+            return Ok(result);
         }
 
         [HttpPut("UpdateUsuarioAsync")]
@@ -121,5 +110,17 @@ namespace SGFE.Api.Controllers.Usuarios
 
             return Ok(result);
         }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginRequestModel request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var token = await _auth.Login(request.Email, request.Password);
+
+            return Ok(new { token });
+        }
+
     }
 }

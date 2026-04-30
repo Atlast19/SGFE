@@ -5,12 +5,12 @@ namespace SGFE.Application.Interfaces.Usuarios
     public interface IUsuarioService
     {
         Task<CreateUsuarioModel> CreateUsuarioAsync(CreateUsuarioModel model);
-        Task<GetUsuarioModel> UpdateUsuarioAsync(UpdateUsuarioModel entity);
+        Task<UpdateUsuarioModel> UpdateUsuarioAsync(UpdateUsuarioModel entity);
         Task<GetUsuarioModel> GetUsuarioByIdAsync(int id);
         Task<GetUsuarioModel> GetUsuarioByEmailAsync(string email);
         Task<List<GetUsuarioModel>> GetAllUsuarioAsync();
-
+        Task<GetUsuarioModel> DeleteUsuarioAsync(int Id);
         Task<List<string>> GetRolesByUsuarioIdAsync(int usuarioId);
-        Task<GetUsuarioModel> GetEmailForLogin(string email);
+        Task<LoginRequestModel> GetEmailForLogin(string email);
     }
 }

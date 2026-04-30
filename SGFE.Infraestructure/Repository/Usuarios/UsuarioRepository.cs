@@ -67,6 +67,43 @@ namespace SGFE.Percistence.Repository.Usuarios
             }
         }
 
+        public async Task<Usuario> DeleteUsuarioAsync(int Id)
+        {
+            try 
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString)) 
+                {
+                    using (SqlCommand command = new SqlCommand("sp_Usuario_Desactivar", connection)) 
+                    {
+                        command.CommandType = System.Data.CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@Id", Id);
+
+                        await connection.OpenAsync();
+
+                        var rowAffected = await command.ExecuteNonQueryAsync();
+
+                        if (rowAffected > 0)
+                        {
+                            return new Usuario
+                            {
+                                Id = Id
+                            };
+                        }
+                        else 
+                        {
+                            _logger.LogWarning($"No se pudieron eliminar los datos del ID: {Id}");
+                            return null;
+                        }
+                    }
+                }
+            }
+            catch 
+            {
+                _logger.LogError($"No se puedieron eliminar los datos del ID: {Id}");
+                throw;
+            }
+        }
+
         public async Task<List<Usuario>> GetAllUsuariosAsync()
         {
             try 
@@ -80,7 +117,8 @@ namespace SGFE.Percistence.Repository.Usuarios
                         using (var reader = await command.ExecuteReaderAsync()) 
                         {
                             var usuarios = new List<Usuario>();
-                            if (await reader.ReadAsync())
+                            
+                            while (await reader.ReadAsync())
                             {
                                 var usuario = new Usuario
                                 {
@@ -88,18 +126,23 @@ namespace SGFE.Percistence.Repository.Usuarios
                                     RolId = reader.GetInt32(reader.GetOrdinal("RolId")),
                                     EmpresaId = reader.GetInt32(reader.GetOrdinal("EmpresaId")),
                                     Nombre = reader.GetString(reader.GetOrdinal("Nombre")),
-                                    Email = reader.GetString(reader.GetOrdinal("Email")),
-                                    PasswordHash = reader.GetString(reader.GetOrdinal("PasswordHash"))
+                                    Email = reader.GetString(reader.GetOrdinal("Email"))
                                 };
                                 usuarios.Add(usuario);
+                            
+                            };
 
-                                return usuarios;
+                            if (!usuarios.Any())
+                            {
+                                _logger.LogWarning("No se encontraron datos en la base de datos");
+                                return null;
                             }
                             else 
                             {
-                                _logger.LogWarning("No se encontrados datos en la base de datos");
-                                return null;
+                                _logger.LogInformation("Datos cargados correctamente");
+                                return usuarios;
                             }
+                            
                         }
                     }
                 }
@@ -129,7 +172,6 @@ namespace SGFE.Percistence.Repository.Usuarios
                                 var usuario = new Usuario
                                 {
                                     Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                                    Nombre = reader.GetString(reader.GetOrdinal("Nombre")),
                                     Email = reader.GetString(reader.GetOrdinal("Email")),
                                     PasswordHash = reader.GetString(reader.GetOrdinal("PasswordHash"))
                                 };
@@ -199,6 +241,7 @@ namespace SGFE.Percistence.Repository.Usuarios
                     {
                         command.CommandType = System.Data.CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@Email", email);
+
                         await connection.OpenAsync();
                         using (var reader = await command.ExecuteReaderAsync())
                         {
@@ -207,9 +250,10 @@ namespace SGFE.Percistence.Repository.Usuarios
                                 var usuario =  new Usuario
                                 {
                                     Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                    RolId = reader.GetInt32(reader.GetOrdinal("RolId")),
+                                    EmpresaId = reader.GetInt32(reader.GetOrdinal("EmpresaId")),
                                     Nombre = reader.GetString(reader.GetOrdinal("Nombre")),
-                                    Email = reader.GetString(reader.GetOrdinal("Email")),
-                                    PasswordHash = reader.GetString(reader.GetOrdinal("PasswordHash"))
+                                    Email = reader.GetString(reader.GetOrdinal("Email"))
                                 };
                                 return usuario;
                             }
@@ -253,8 +297,7 @@ namespace SGFE.Percistence.Repository.Usuarios
                                     RolId = reader.GetInt32(reader.GetOrdinal("RolId")),
                                     EmpresaId = reader.GetInt32(reader.GetOrdinal("EmpresaId")),
                                     Nombre = reader.GetString(reader.GetOrdinal("Nombre")),
-                                    Email = reader.GetString(reader.GetOrdinal("Email")),
-                                    PasswordHash = reader.GetString(reader.GetOrdinal("PasswordHash"))
+                                    Email = reader.GetString(reader.GetOrdinal("Email"))
                                 };
                                 return usuario;
                             }
@@ -288,7 +331,7 @@ namespace SGFE.Percistence.Repository.Usuarios
                         command.Parameters.AddWithValue("@Id", entity.Id);
                         command.Parameters.AddWithValue("@Nombre", entity.Nombre);
                         command.Parameters.AddWithValue("@Email", entity.Email);
-                        command.Parameters.AddWithValue("@Password", entity.PasswordHash);
+                        command.Parameters.AddWithValue("@PasswordHash", entity.PasswordHash);
 
                         await connection.OpenAsync();
                         var rowsAffected = await command.ExecuteNonQueryAsync();

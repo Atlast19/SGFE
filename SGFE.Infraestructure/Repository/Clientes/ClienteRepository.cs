@@ -19,7 +19,7 @@ namespace SGFE.Percistence.Repository.Clientes
             _connectionString = _configuration.GetConnectionString("DefaultConnection");
         }
 
-        public async Task CreateClienteAsync(Cliente entity)
+        public async Task<Cliente> CreateClienteAsync(Cliente entity)
         {
             try 
             {
@@ -61,10 +61,12 @@ namespace SGFE.Percistence.Repository.Clientes
                                 Activo = entity.Activo
                             };
 
+                            return clientes;
+
                         }
                         else{
                             _logger.LogWarning("No se pudo crear el cliente con Documento: {Documento}", entity.Documento);
-                            throw new ArgumentException("No se pudo crear el cliente con Documento: " + entity.Documento);
+                            return null;
                         }
                     }
                 }
@@ -76,7 +78,7 @@ namespace SGFE.Percistence.Repository.Clientes
             }
         }
 
-        public Task DeleteClienteAsync(int Id)
+        public async Task<Cliente> DeleteClienteAsync(int Id)
         {
             try 
             {
@@ -87,8 +89,9 @@ namespace SGFE.Percistence.Repository.Clientes
                     {
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@Id", Id);
-                        connection.Open();
-                        var rowsAffected = cmd.ExecuteNonQuery();
+
+                        await connection.OpenAsync();
+                        var rowsAffected = await cmd.ExecuteNonQueryAsync();
                         if (rowsAffected > 0)
                         {
                             _logger.LogInformation("Cliente eliminado exitosamente con Id: {ClienteId}", Id);
@@ -97,11 +100,13 @@ namespace SGFE.Percistence.Repository.Clientes
                             {
                                 Id = Id
                             };
+
+                            return clientes;
                         }
                         else
                         {
                             _logger.LogWarning("No se pudo eliminar el cliente con Id: {ClienteId}", Id);
-                            throw new ArgumentException("No se pudo eliminar el cliente con Id: " + Id);
+                            return null;
                         }
                     }
                 }
@@ -111,7 +116,6 @@ namespace SGFE.Percistence.Repository.Clientes
                 _logger.LogError(ex, "Error al eliminar el cliente con Id: {ClienteId}", Id);
                 throw;
             }
-             return Task.CompletedTask;
         }
 
         public async Task<List<Cliente>> GetAllClienteAsync()
@@ -153,7 +157,7 @@ namespace SGFE.Percistence.Repository.Clientes
 
                             if (!clientes.Any()) {
                                 _logger.LogWarning("No se encontraron clientes registrados");
-                                throw new ArgumentException("No se encontraron clientes registrados");
+                                return null;
                             }
 
                             _logger.LogInformation("Se encontraron {Count} clientes", clientes.Count);
@@ -207,7 +211,7 @@ namespace SGFE.Percistence.Repository.Clientes
                             else 
                             {
                                 _logger.LogWarning("No se encontró un cliente con EmpresaId: {EmpresaId}", EmpresaId);
-                                throw new ArgumentException($"No se encontró un cliente con EmpresaId: {EmpresaId}");
+                                return null;
                             }
                         }
                     }
@@ -262,7 +266,7 @@ namespace SGFE.Percistence.Repository.Clientes
                             else 
                             {
                                 _logger.LogWarning("No se encontró un cliente con Id: {ClienteId}", ClienteId);
-                                throw new ArgumentException($"No se encontró un cliente con Id: {ClienteId}");
+                                return null;
                             }
                         }
                     }
@@ -275,7 +279,7 @@ namespace SGFE.Percistence.Repository.Clientes
             }
         }
 
-        public async Task UpdateClienteAsync(Cliente entity)
+        public async Task<Cliente> UpdateClienteAsync(Cliente entity)
         {
             try 
             {
@@ -318,10 +322,12 @@ namespace SGFE.Percistence.Repository.Clientes
                                 Activo = entity.Activo,
                                 FechaActualizacion = entity.FechaActualizacion
                             };
+
+                            return clientes;
                         }
                         else {                             
                             _logger.LogWarning("No se pudo actualizar el cliente con Id: {ClienteId}", entity.Id);
-                            throw new ArgumentException("No se pudo actualizar el cliente con Id: " + entity.Id);
+                            return null;
                         }
                     }
                 }

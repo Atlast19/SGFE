@@ -9,8 +9,8 @@ namespace SGFE.Domein.Interfaces.Usuarios
         Task<Usuario> GetUsuarioByIdAsync(int id);
         Task<Usuario> GetUsuarioByEmailAsync(string email);
         Task<List<Usuario>> GetAllUsuariosAsync();
-
         Task<List<string>> GetRolesByUsuarioIdAsync(int usuarioId);
         Task<Usuario> GetEmailForLogin(string email);
+        Task<Usuario> DeleteUsuarioAsync(int Id);
     }
 }

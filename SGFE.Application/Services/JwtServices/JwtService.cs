@@ -18,7 +18,7 @@ namespace SGFE.Application.Services.AuthService
 
         public string GenerateToken(Usuario user, List<string> roles)
         {
-            var jwt = _configuration.GetSection("Jwt");
+            var jwt = _configuration.GetSection("JwtSettings");
 
             var key = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(jwt["Key"])

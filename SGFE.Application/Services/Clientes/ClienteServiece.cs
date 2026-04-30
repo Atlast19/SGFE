@@ -1,4 +1,5 @@
 ﻿using SGFE.Application.Interfaces.Clientes;
+using SGFE.Application.Models.Clientes;
 using SGFE.Domein.Entitys;
 using SGFE.Domein.Interfaces.Clientes;
 
@@ -12,34 +13,155 @@ namespace SGFE.Application.Services.Clientes
         {
             _repository = repository;
         }
-        public async Task CreateClienteAsync(Cliente entity)
+
+        public async Task<CreateClienteModel> CreateClienteAsync(CreateClienteModel model)
         {
-            await _repository.CreateClienteAsync(entity);
+            var clientes = new Cliente
+            {
+                EmpresaId = model.EmpresaId,
+                TipoDocumento = model.TipoDocumento,
+                Documento = model.Documento,
+                Nombre = model.Nombre,
+                NombreComercial =model.NombreComercial,
+                Direccion = model.Direccion,
+                Telefono = model.Telefono,
+                Email = model.Email
+            };
+
+            var CreateCliente = await _repository.CreateClienteAsync(clientes);
+
+            if (CreateCliente == null)
+                return null;
+
+            return new CreateClienteModel
+            {
+                EmpresaId = CreateCliente.EmpresaId,
+                TipoDocumento = CreateCliente.TipoDocumento,
+                Documento = CreateCliente.Documento,
+                Nombre = CreateCliente.Nombre,
+                NombreComercial = CreateCliente.NombreComercial,
+                Direccion = CreateCliente.Direccion,
+                Telefono = CreateCliente.Telefono,
+                Email = CreateCliente.Email
+            };
         }
 
-        public async Task DeleteClienteAsync(int Id)
+        public async Task<GetClienteModel> DeleteClienteAsync(int Id)
         {
-             await _repository.DeleteClienteAsync(Id);
+            var clientes = await _repository.DeleteClienteAsync(Id);
+
+            if (clientes == null)
+                return null;
+
+            return new GetClienteModel
+            {
+                Id = clientes.Id,
+                EmpresaId = clientes.EmpresaId,
+                TipoDocumento = clientes.TipoDocumento,
+                Documento = clientes.Documento,
+                Nombre = clientes.Nombre,
+                NombreComercial = clientes.NombreComercial,
+                Direccion = clientes.Direccion,
+                Telefono = clientes.Telefono,
+                Email = clientes.Email
+            };
         }
 
-        public async Task<List<Cliente>> GetAllClienteAsync()
+        public async Task<List<GetClienteModel>> GetAllClienteAsync()
         {
-            return await _repository.GetAllClienteAsync();
+            var clientes = await _repository.GetAllClienteAsync();
+
+            if (clientes == null)
+                return null;
+
+            return clientes.Select(c => new GetClienteModel 
+            {
+                Id = c.Id,
+                EmpresaId = c.EmpresaId,
+                TipoDocumento = c.TipoDocumento,
+                Documento = c.Documento,
+                Nombre = c.Nombre,
+                NombreComercial = c.NombreComercial,
+                Direccion = c.Direccion,
+                Telefono = c.Telefono,
+                Email = c.Email
+            }).ToList();
         }
 
-        public async Task<Cliente> GetClienteByEmpresaIdAsync(int EmpresaId)
+        public async Task<GetClienteModel> GetClienteByEmpresaIdAsync(int EmpresaId)
         {
-            return await _repository.GetClienteByEmpresaIdAsync(EmpresaId);
+            var clientes = await _repository.GetClienteByEmpresaIdAsync(EmpresaId);
+
+            if (clientes == null)
+                return null;
+
+            return new GetClienteModel
+            {
+                Id = clientes.Id,
+                EmpresaId = clientes.EmpresaId,
+                TipoDocumento = clientes.TipoDocumento,
+                Documento = clientes.Documento,
+                Nombre = clientes.Nombre,
+                NombreComercial = clientes.NombreComercial,
+                Direccion = clientes.Direccion,
+                Telefono = clientes.Telefono,
+                Email = clientes.Email
+            };
         }
 
-        public Task<Cliente> GetClienteByIdAsync(int ClienteId)
+        public async Task<GetClienteModel> GetClienteByIdAsync(int ClienteId)
         {
-            return _repository.GetClienteByIdAsync(ClienteId);
+            var clientes = await _repository.GetClienteByIdAsync(ClienteId);
+
+            if (clientes == null)
+                return null;
+
+            return new GetClienteModel
+            {
+                Id = clientes.Id,
+                EmpresaId = clientes.EmpresaId,
+                TipoDocumento = clientes.TipoDocumento,
+                Documento = clientes.Documento,
+                Nombre = clientes.Nombre,
+                NombreComercial = clientes.NombreComercial,
+                Direccion = clientes.Direccion,
+                Telefono = clientes.Telefono,
+                Email = clientes.Email
+            };
         }
 
-        public async Task UpdateClienteAsync(Cliente entity)
+        public async Task<UpdateClienteModel> UpdateClienteAsync(UpdateClienteModel model)
         {
-            await _repository.UpdateClienteAsync(entity);
+            var clientes = new Cliente
+            {
+                Id = model.Id,
+                EmpresaId = model.EmpresaId,
+                TipoDocumento= model.TipoDocumento,
+                Documento = model.Documento,
+                Nombre = model.Nombre,
+                NombreComercial = model.NombreComercial,
+                Direccion = model.Direccion,
+                Telefono = model.Telefono,
+                Email = model.Email
+            };
+
+            var UpdateCliente = await _repository.UpdateClienteAsync(clientes);
+
+            if (UpdateCliente == null)
+                return null;
+
+            return new UpdateClienteModel
+            {
+                Id = UpdateCliente.Id,
+                EmpresaId = UpdateCliente.EmpresaId,
+                TipoDocumento = UpdateCliente.TipoDocumento,
+                Documento = UpdateCliente.Documento,
+                Nombre = UpdateCliente.Nombre,
+                NombreComercial = UpdateCliente.NombreComercial,
+                Direccion = UpdateCliente.Direccion,
+                Telefono = UpdateCliente.Telefono,
+                Email = UpdateCliente.Email
+            };
         }
     }
 }

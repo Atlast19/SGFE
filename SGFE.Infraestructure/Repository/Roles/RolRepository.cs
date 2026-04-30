@@ -71,12 +71,14 @@ namespace SGFE.Percistence.Repository.Roles
                     {
                         command.CommandType = System.Data.CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@Id", RoleId);
+
                         await connection.OpenAsync();
                         var rowsAffected = await command.ExecuteNonQueryAsync();
 
                         if (rowsAffected > 0)
                         {
                             _logger.LogInformation("Rol desactivado exitosamente");
+
                             var rol = new Rol
                             {
                                 Id = RoleId
@@ -115,7 +117,7 @@ namespace SGFE.Percistence.Repository.Roles
                         {
                             var rolesList = new List<Rol>();
 
-                            if (await reader.ReadAsync())
+                            while (await reader.ReadAsync())
                             {
                                 var rol = new Rol
                                 {
@@ -124,14 +126,17 @@ namespace SGFE.Percistence.Repository.Roles
                                     Descripcion = reader.GetString(reader.GetOrdinal("Descripcion"))
                                 };
                                 rolesList.Add(rol);
+                            };
 
-                                _logger.LogInformation("Roles obtenidos exitosamente");
-                                return rolesList;
-                            }
-                            else 
+                            if (!rolesList.Any())
                             {
                                 _logger.LogWarning("No se encontraron datos en la base de datos");
                                 return null;
+                            }
+                            else 
+                            {
+                                _logger.LogInformation("Datos cargados correctamente");
+                                return rolesList;
                             }
                         }
                     }

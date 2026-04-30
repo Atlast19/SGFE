@@ -1,16 +1,15 @@
 ﻿
-
-using SGFE.Domein.Entitys;
+using SGFE.Application.Models.Clientes;
 
 namespace SGFE.Application.Interfaces.Clientes
 {
     public interface IClienteService
     {
-        Task CreateClienteAsync(Cliente entity);
-        Task UpdateClienteAsync(Cliente entity);
-        Task<Cliente> GetClienteByEmpresaIdAsync(int EmpresaId);
-        Task<Cliente> GetClienteByIdAsync(int ClienteId);
-        Task<List<Cliente>> GetAllClienteAsync();
-        Task DeleteClienteAsync(int Id);
+        Task<CreateClienteModel> CreateClienteAsync(CreateClienteModel model);
+        Task<UpdateClienteModel> UpdateClienteAsync(UpdateClienteModel model);
+        Task<GetClienteModel> GetClienteByEmpresaIdAsync(int EmpresaId);
+        Task<GetClienteModel> GetClienteByIdAsync(int ClienteId);
+        Task<List<GetClienteModel>> GetAllClienteAsync();
+        Task<GetClienteModel> DeleteClienteAsync(int Id);
     }
 }

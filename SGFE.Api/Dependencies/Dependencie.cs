@@ -1,7 +1,11 @@
 ﻿using SGFE.Application.Interfaces.Empresas;
+using SGFE.Application.Interfaces.PasswordHasher;
 using SGFE.Application.Interfaces.Roles;
 using SGFE.Application.Interfaces.Usuarios;
+using SGFE.Application.Services.AuthService;
+using SGFE.Application.Services.AuthServices;
 using SGFE.Application.Services.Empresas;
+using SGFE.Application.Services.PasswordHasher;
 using SGFE.Application.Services.Roles;
 using SGFE.Application.Services.Ususarios;
 using SGFE.Domein.Interfaces.Empresas;
@@ -20,6 +24,10 @@ namespace SGFE.Api.Dependencies
             #region Usuarios
             service.AddScoped<IUsuarioRepository, UsuarioRepository>();
             service.AddScoped<IUsuarioService, UsuarioService>();
+            service.AddScoped<AuthService>();
+            service.AddScoped<JwtService>();
+
+            service.AddScoped<IPasswordHash, PasswordHashService>();
             #endregion
 
             #region Roles

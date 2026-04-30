@@ -34,7 +34,7 @@ namespace SGFE.Application.Services.AuthServices
             //  obtener roles
             var roles = await _repo.GetRolesByUsuarioIdAsync(user.Id);
 
-            // 🔥 generar token con roles
+            // generar token con roles
             return _jwt.GenerateToken(user, roles);
         }
     }

@@ -1,4 +1,5 @@
-﻿using SGFE.Application.Interfaces.Usuarios;
+﻿using SGFE.Application.Interfaces.PasswordHasher;
+using SGFE.Application.Interfaces.Usuarios;
 using SGFE.Application.Models.Usuarios;
 using SGFE.Domein.Entitys;
 using SGFE.Domein.Interfaces.Usuarios;
@@ -8,10 +9,12 @@ namespace SGFE.Application.Services.Ususarios
     public class UsuarioService : IUsuarioService
     {
         private readonly IUsuarioRepository _repository;
+        private readonly IPasswordHash _hasher;
 
-        public UsuarioService(IUsuarioRepository repository)
+        public UsuarioService(IUsuarioRepository repository, IPasswordHash hasher)
         {
             _repository = repository;
+            _hasher = hasher;
         }
 
         public async Task<CreateUsuarioModel> CreateUsuarioAsync(CreateUsuarioModel model)
@@ -22,7 +25,7 @@ namespace SGFE.Application.Services.Ususarios
                 EmpresaId = model.EmpresaId,
                 Nombre = model.Nombre,
                 Email = model.Email,
-                PasswordHash = model.PasswordHash
+                PasswordHash = _hasher.Hash(model.PasswordHash)
             };
 
             var createdUsuario = await _repository.CreateUsuarioAsync(usuarios);
@@ -39,6 +42,23 @@ namespace SGFE.Application.Services.Ususarios
             };
         }
 
+        public async Task<GetUsuarioModel> DeleteUsuarioAsync(int Id)
+        {
+            var usuario = await _repository.DeleteUsuarioAsync(Id);
+
+            if (usuario == null)
+                return null;
+
+            return new GetUsuarioModel
+            {
+                Id = usuario.Id,
+                RolId = usuario.RolId,
+                EmpresaId = usuario.EmpresaId,
+                Nombre = usuario.Nombre,
+                Email = usuario.Email
+            };
+        }
+
         public async Task<List<GetUsuarioModel>> GetAllUsuarioAsync()
         {
             var usuarios = await _repository.GetAllUsuariosAsync();
@@ -52,12 +72,11 @@ namespace SGFE.Application.Services.Ususarios
                 RolId = u.RolId,
                 EmpresaId = u.EmpresaId,
                 Nombre = u.Nombre,
-                Email = u.Email,
-                PasswordHash = u.PasswordHash
+                Email = u.Email
             }).ToList();
         }
 
-        public async Task<GetUsuarioModel> GetEmailForLogin(string email)
+        public async Task<LoginRequestModel> GetEmailForLogin(string email)
         {
             var usuario = await _repository.GetEmailForLogin(email);
 
@@ -66,14 +85,10 @@ namespace SGFE.Application.Services.Ususarios
                 return null;
             }
 
-            return new GetUsuarioModel
+            return new LoginRequestModel
             {
-                Id = usuario.Id,
-                RolId = usuario.RolId,
-                EmpresaId = usuario.EmpresaId,
-                Nombre = usuario.Nombre,
                 Email = usuario.Email,
-                PasswordHash = usuario.PasswordHash
+                Password = usuario.PasswordHash
             };
         }
 
@@ -104,8 +119,7 @@ namespace SGFE.Application.Services.Ususarios
                 RolId = usuario.RolId,
                 EmpresaId = usuario.EmpresaId,
                 Nombre = usuario.Nombre,
-                Email = usuario.Email,
-                PasswordHash = usuario.PasswordHash
+                Email = usuario.Email
             };
         }
 
@@ -124,21 +138,19 @@ namespace SGFE.Application.Services.Ususarios
                 RolId = usuario.RolId,
                 EmpresaId = usuario.EmpresaId,
                 Nombre = usuario.Nombre,
-                Email = usuario.Email,
-                PasswordHash = usuario.PasswordHash
+                Email = usuario.Email
             };
         }
 
-        public async Task<GetUsuarioModel> UpdateUsuarioAsync(UpdateUsuarioModel entity)
+        public async Task<UpdateUsuarioModel> UpdateUsuarioAsync(UpdateUsuarioModel entity)
         {
             var usuario = new Usuario
             {
                 Id = entity.Id,
-                RolId = entity.RolId,
                 EmpresaId = entity.EmpresaId,
                 Nombre = entity.Nombre,
                 Email = entity.Email,
-                PasswordHash = entity.PasswordHash
+                PasswordHash = _hasher.Hash(entity.PasswordHash)
             };
 
             var updatedUsuario = await _repository.UpdateUsuarioAsync(usuario);
@@ -146,10 +158,9 @@ namespace SGFE.Application.Services.Ususarios
             if (updatedUsuario == null)
                 return null;
 
-            return new GetUsuarioModel
+            return new UpdateUsuarioModel
             {
                 Id = updatedUsuario.Id,
-                RolId = updatedUsuario.RolId,
                 EmpresaId = updatedUsuario.EmpresaId,
                 Nombre = updatedUsuario.Nombre,
                 Email = updatedUsuario.Email,

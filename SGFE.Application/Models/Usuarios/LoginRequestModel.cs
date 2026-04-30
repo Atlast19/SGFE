@@ -1,7 +1,7 @@
 ﻿
-namespace SGFE.Application.Models.LoginRequests
+namespace SGFE.Application.Models.Usuarios
 {
-    public class LoginRequest
+    public class LoginRequestModel
     {
         public string Email { get; set; }
         public string Password { get; set; }
