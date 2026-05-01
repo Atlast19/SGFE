@@ -23,8 +23,6 @@ public partial class SGFEContext : DbContext
 
     public virtual DbSet<Cliente> Clientes { get; set; }
 
-    public virtual DbSet<Configuracion> Configuracions { get; set; }
-
     public virtual DbSet<Empresa> Empresas { get; set; }
 
     public virtual DbSet<EnvioDGII> EnviosDGIIs { get; set; }
@@ -32,8 +30,6 @@ public partial class SGFEContext : DbContext
     public virtual DbSet<Factura> Facturas { get; set; }
 
     public virtual DbSet<FacturaDetalle> FacturaDetalles { get; set; }
-
-    public virtual DbSet<Log> Logs { get; set; }
 
     public virtual DbSet<Rol> Roles { get; set; }
 
@@ -51,12 +47,10 @@ public partial class SGFEContext : DbContext
     {
         modelBuilder.ApplyConfiguration(new Domein.Entitys.Configurations.CertificadosDigitaleConfiguration());
         modelBuilder.ApplyConfiguration(new Domein.Entitys.Configurations.ClienteConfiguration());
-        modelBuilder.ApplyConfiguration(new Domein.Entitys.Configurations.ConfiguracionConfiguration());
         modelBuilder.ApplyConfiguration(new Domein.Entitys.Configurations.EmpresaConfiguration());
         modelBuilder.ApplyConfiguration(new Domein.Entitys.Configurations.EnviosDGIIConfiguration());
         modelBuilder.ApplyConfiguration(new Domein.Entitys.Configurations.FacturaConfiguration());
         modelBuilder.ApplyConfiguration(new Domein.Entitys.Configurations.FacturaDetalleConfiguration());
-        modelBuilder.ApplyConfiguration(new Domein.Entitys.Configurations.LogConfiguration());
         modelBuilder.ApplyConfiguration(new Domein.Entitys.Configurations.RoleConfiguration());
         modelBuilder.ApplyConfiguration(new Domein.Entitys.Configurations.SecuenciaNCFConfiguration());
         modelBuilder.ApplyConfiguration(new Domein.Entitys.Configurations.TiposECFConfiguration());

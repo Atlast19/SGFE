@@ -135,7 +135,6 @@ namespace SGFE.Application.Services.Clientes
             var clientes = new Cliente
             {
                 Id = model.Id,
-                EmpresaId = model.EmpresaId,
                 TipoDocumento= model.TipoDocumento,
                 Documento = model.Documento,
                 Nombre = model.Nombre,
@@ -153,7 +152,6 @@ namespace SGFE.Application.Services.Clientes
             return new UpdateClienteModel
             {
                 Id = UpdateCliente.Id,
-                EmpresaId = UpdateCliente.EmpresaId,
                 TipoDocumento = UpdateCliente.TipoDocumento,
                 Documento = UpdateCliente.Documento,
                 Nombre = UpdateCliente.Nombre,

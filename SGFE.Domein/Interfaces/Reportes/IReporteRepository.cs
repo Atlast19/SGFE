@@ -4,7 +4,7 @@ namespace SGFE.Domein.Interfaces.Reportes
 {
     public interface IReporteRepository
     {
-        Task<List<FacturaRepostes>> GetFacturaRepostesAsync(int empresaId, DateTime? fechaDesde, DateTime? fechaHasta, string estado);
-        Task<List<ResumenFacturas>> GetResumenFacturasAsync(int empresaId, int? anio, int? mes);
+        Task<List<FacturaRepostes>> GetFacturaRepostesAsync(FacturaRepostes filtro);
+        Task<List<ResumenFacturas>> GetResumenFacturasAsync(ResumenFacturas filtro);
     }
 }

@@ -1,12 +1,11 @@
-﻿
+﻿using SGFE.Application.Models.Repostes;
 
-using SGFE.Domein.Entitys.ReportesEntirys;
 
 namespace SGFE.Application.Interfaces.Reportes
 {
     public interface IReporteService
     {
-        Task<List<FacturaRepostes>> GetFacturaRepostesAsync(int empresaId, DateTime? fechaDesde, DateTime? fechaHasta, string estado);
-        Task<List<ResumenFacturas>> GetResumenFacturasAsync(int empresaId, int? anio, int? mes);
+        Task<List<GetFacturaReposte>> GetFacturaRepostesAsync(GetFacturaReposte filtroModel);
+        Task<List<GetResumenFactura>> GetResumenFacturasAsync(GetResumenFactura filtroModel);
     }
 }

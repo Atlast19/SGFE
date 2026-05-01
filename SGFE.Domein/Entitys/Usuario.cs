@@ -27,7 +27,5 @@ public partial class Usuario
 
     public virtual Empresa Empresa { get; set; }
 
-    public virtual ICollection<Log> Logs { get; set; } = new List<Log>();
-
     public virtual Rol Rol { get; set; }
 }

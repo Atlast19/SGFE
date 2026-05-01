@@ -17,6 +17,7 @@ builder.Services.AddDbContext<SGFEContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
+
 var JwtSettingsSection = builder.Configuration.GetSection("JwtSettings");
 
 builder.Services.AddSingleton(JwtSettingsSection);
@@ -41,10 +42,11 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = JwtSettingsSection["Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(key),
 
-        RoleClaimType = ClaimTypes.Role, // importante para roles
+        RoleClaimType = ClaimTypes.Role,
         ClockSkew = TimeSpan.Zero
     };
 });
+
 
 builder.Services.AddAuthorization();
 

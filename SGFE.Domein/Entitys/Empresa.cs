@@ -33,11 +33,7 @@ public partial class Empresa
 
     public virtual ICollection<Cliente> Clientes { get; set; } = new List<Cliente>();
 
-    public virtual ICollection<Configuracion> Configuracions { get; set; } = new List<Configuracion>();
-
     public virtual ICollection<Factura> Facturas { get; set; } = new List<Factura>();
-
-    public virtual ICollection<Log> Logs { get; set; } = new List<Log>();
 
     public virtual ICollection<SecuenciaNCF> SecuenciaNCFs { get; set; } = new List<SecuenciaNCF>();
 

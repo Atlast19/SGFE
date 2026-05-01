@@ -38,7 +38,6 @@ namespace SGFE.Percistence.Repository.Clientes
                         cmd.Parameters.AddWithValue("@Direccion", entity.Direccion);
                         cmd.Parameters.AddWithValue("@Telefono", entity.Telefono);
                         cmd.Parameters.AddWithValue("@Email", entity.Email);
-                        cmd.Parameters.AddWithValue("@Activo", (object)entity.Activo ?? DBNull.Value);
 
                          await connection.OpenAsync();
 
@@ -57,8 +56,7 @@ namespace SGFE.Percistence.Repository.Clientes
                                 NombreComercial = entity.NombreComercial,
                                 Direccion = entity.Direccion,
                                 Telefono = entity.Telefono,
-                                Email = entity.Email,
-                                Activo = entity.Activo
+                                Email = entity.Email
                             };
 
                             return clientes;
@@ -85,7 +83,7 @@ namespace SGFE.Percistence.Repository.Clientes
                 _logger.LogInformation("Ejecucion del procedimiento almacenado sp_Cliente_Eliminar con Id: {ClienteId}", Id);
                 using (SqlConnection connection = new SqlConnection(_connectionString)) 
                 {
-                    using (SqlCommand cmd = new SqlCommand("sp_Cliente_Eliminar", connection)) 
+                    using (SqlCommand cmd = new SqlCommand("sp_Cliente_EliminarLogico", connection)) 
                     {
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@Id", Id);
@@ -126,7 +124,7 @@ namespace SGFE.Percistence.Repository.Clientes
 
                 using (SqlConnection conection = new SqlConnection(_connectionString)) 
                 {
-                    using (SqlCommand cmd = new SqlCommand("sp_Cliente_Crear", conection))
+                    using (SqlCommand cmd = new SqlCommand("sp_Clientes_ObtenerTodos", conection))
                     {
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
                         await conection.OpenAsync();
@@ -147,10 +145,7 @@ namespace SGFE.Percistence.Repository.Clientes
                                     NombreComercial = reader.GetString(reader.GetOrdinal("NombreComercial")),
                                     Direccion = reader.GetString(reader.GetOrdinal("Direccion")),
                                     Telefono = reader.GetString(reader.GetOrdinal("Telefono")),
-                                    Email = reader.GetString(reader.GetOrdinal("Email")),
-                                    Activo = reader.IsDBNull(reader.GetOrdinal("Activo")) ? (bool?)null : reader.GetBoolean(reader.GetOrdinal("Activo")),
-                                    FechaCreacion = reader.IsDBNull(reader.GetOrdinal("FechaCreacion")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("FechaCreacion")),
-                                    FechaActualizacion = reader.IsDBNull(reader.GetOrdinal("FechaActualizacion")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("FechaActualizacion"))
+                                    Email = reader.GetString(reader.GetOrdinal("Email"))
                                 };
                                 clientes.Add(cliente);
                             }
@@ -180,7 +175,7 @@ namespace SGFE.Percistence.Repository.Clientes
                 _logger.LogInformation("Ejecucion del proceso almacenado sp_Cliente_ObtenerPorEmpresaId con EmpresaId: {EmpresaId}", EmpresaId);
                 using (SqlConnection connection = new SqlConnection(_connectionString)) 
                 {
-                    using (SqlCommand cmd = new SqlCommand("sp_Cliente_ObtenerPorEmpresaId", connection)) 
+                    using (SqlCommand cmd = new SqlCommand("sp_Cliente_ObtenerPorEmpresa", connection)) 
                     {
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@EmpresaId", EmpresaId);
@@ -201,9 +196,6 @@ namespace SGFE.Percistence.Repository.Clientes
                                     cliente.Direccion = reader.GetString(reader.GetOrdinal("Direccion"));
                                     cliente.Telefono = reader.GetString(reader.GetOrdinal("Telefono"));
                                     cliente.Email = reader.GetString(reader.GetOrdinal("Email"));
-                                    cliente.Activo = reader.IsDBNull(reader.GetOrdinal("Activo")) ? (bool?)null : reader.GetBoolean(reader.GetOrdinal("Activo"));
-                                    cliente.FechaCreacion = reader.IsDBNull(reader.GetOrdinal("FechaCreacion")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("FechaCreacion"));
-                                    cliente.FechaActualizacion = reader.IsDBNull(reader.GetOrdinal("FechaActualizacion")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("FechaActualizacion"));
                                 }
                                 _logger.LogInformation("Cliente encontrado con EmpresaId: {EmpresaId}", EmpresaId);
                                 return cliente;
@@ -256,9 +248,6 @@ namespace SGFE.Percistence.Repository.Clientes
                                     cliente.Direccion = reader.GetString(reader.GetOrdinal("Direccion"));
                                     cliente.Telefono = reader.GetString(reader.GetOrdinal("Telefono"));
                                     cliente.Email = reader.GetString(reader.GetOrdinal("Email"));
-                                    cliente.Activo = reader.IsDBNull(reader.GetOrdinal("Activo")) ? (bool?)null : reader.GetBoolean(reader.GetOrdinal("Activo"));
-                                    cliente.FechaCreacion = reader.IsDBNull(reader.GetOrdinal("FechaCreacion")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("FechaCreacion"));
-                                    cliente.FechaActualizacion = reader.IsDBNull(reader.GetOrdinal("FechaActualizacion")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("FechaActualizacion"));
                                 }
                                 _logger.LogInformation("Cliente encontrado con Id: {ClienteId}", ClienteId);
                                 return cliente;
@@ -291,7 +280,6 @@ namespace SGFE.Percistence.Repository.Clientes
                     {
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@Id", entity.Id);
-                        cmd.Parameters.AddWithValue("@EmpresaId", entity.EmpresaId);
                         cmd.Parameters.AddWithValue("@TipoDocumento", entity.TipoDocumento);
                         cmd.Parameters.AddWithValue("@Documento", entity.Documento);
                         cmd.Parameters.AddWithValue("@Nombre", entity.Nombre);
@@ -299,8 +287,6 @@ namespace SGFE.Percistence.Repository.Clientes
                         cmd.Parameters.AddWithValue("@Direccion", entity.Direccion);
                         cmd.Parameters.AddWithValue("@Telefono", entity.Telefono);
                         cmd.Parameters.AddWithValue("@Email", entity.Email);
-                        cmd.Parameters.AddWithValue("@Activo", entity.Activo);
-                        cmd.Parameters.AddWithValue("@FechaActualizacion", entity.FechaActualizacion);
 
                         await connection.OpenAsync();
 
@@ -318,9 +304,7 @@ namespace SGFE.Percistence.Repository.Clientes
                                 NombreComercial = entity.NombreComercial,
                                 Direccion = entity.Direccion,
                                 Telefono = entity.Telefono,
-                                Email = entity.Email,
-                                Activo = entity.Activo,
-                                FechaActualizacion = entity.FechaActualizacion
+                                Email = entity.Email
                             };
 
                             return clientes;

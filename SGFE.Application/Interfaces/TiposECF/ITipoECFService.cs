@@ -1,11 +1,13 @@
-﻿
-using SGFE.Domein.Entitys;
+﻿using SGFE.Application.Models.TiposECF;
 
 namespace SGFE.Application.Interfaces.TiposECF
 {
     public interface ITipoECFService
     {
-        Task CrearTiposECFAsync(TipoECF entity);
-        Task<List<TipoECF>> GetAllTiposECFAsync();
+        Task<CreateTipoECF> CrearTiposECFAsync(CreateTipoECF model);
+        Task<List<GetTipoECF>> GetAllTiposECFAsync();
+        Task<GetTipoECF> DeleteTipoECFAsync(int id);
+        Task<GetTipoECF> GetTipoECFByIdAsync(int id);
+        Task<UpdateTipoECF> UpdateTipoECFAsync(UpdateTipoECF model);
     }
 }

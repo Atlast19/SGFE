@@ -5,8 +5,6 @@ namespace SGFE.Application.Models.Clientes
     {
         public int Id { get; set; }
 
-        public int EmpresaId { get; set; }
-
         public string TipoDocumento { get; set; }
 
         public string Documento { get; set; }

@@ -1,7 +1,7 @@
 ﻿
-namespace SGFE.Domein.Entitys.ReportesEntirys
+namespace SGFE.Application.Models.Repostes
 {
-    public class FacturaRepostes
+    public class GetFacturaReposte
     {
         public int EmpresaId { get; set; }
         public DateTime FechaDesde { get; set; }

@@ -1,4 +1,5 @@
 ﻿using SGFE.Application.Interfaces.Reportes;
+using SGFE.Application.Models.Repostes;
 using SGFE.Domein.Entitys.ReportesEntirys;
 using SGFE.Domein.Interfaces.Reportes;
 
@@ -13,14 +14,48 @@ namespace SGFE.Application.Services.Reportes
             _repository = repository;
         }
 
-        public async Task<List<FacturaRepostes>> GetFacturaRepostesAsync(int empresaId, DateTime? fechaDesde, DateTime? fechaHasta, string estado)
+        public async Task<List<GetFacturaReposte>> GetFacturaRepostesAsync(GetFacturaReposte filtroModel)
         {
-            return await _repository.GetFacturaRepostesAsync(empresaId, fechaDesde, fechaHasta, estado);
+            var filtro = new FacturaRepostes
+            {
+                EmpresaId = filtroModel.EmpresaId,
+                FechaDesde = filtroModel.FechaDesde,
+                FechaHasta = filtroModel.FechaHasta
+            };
+
+            var facturaRepostesEntities = await _repository.GetFacturaRepostesAsync(filtro);
+
+            if (facturaRepostesEntities == null)
+                return null;
+
+            return facturaRepostesEntities.Select(entity => new GetFacturaReposte
+            {
+                EmpresaId = entity.EmpresaId,
+                FechaDesde = entity.FechaDesde,
+                FechaHasta = entity.FechaHasta
+            }).ToList();
         }
 
-        public async Task<List<ResumenFacturas>> GetResumenFacturasAsync(int empresaId, int? anio, int? mes)
+        public async Task<List<GetResumenFactura>> GetResumenFacturasAsync(GetResumenFactura filtroModel)
         {
-            return await _repository.GetResumenFacturasAsync(empresaId, anio, mes);
+            var filtro = new ResumenFacturas
+            {
+                EmpresaId = filtroModel.EmpresaId,
+                Mes = filtroModel.Mes,
+                Anio = filtroModel.Anio
+            };
+
+            var resumenFacturasEntities = await _repository.GetResumenFacturasAsync(filtro);
+
+            if(resumenFacturasEntities == null)
+                return null;
+
+            return resumenFacturasEntities.Select(entity => new GetResumenFactura
+            {
+                EmpresaId = entity.EmpresaId,
+                Mes = entity.Mes,
+                Anio = entity.Anio
+            }).ToList();
         }
     }
 }

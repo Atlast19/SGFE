@@ -18,20 +18,19 @@ namespace SGFE.Percistence.Repository.Repostes
             _logger = logger;
             _connectionString = _configuration.GetConnectionString("DefaultConnection");
         }
-        public async Task<List<FacturaRepostes>> GetFacturaRepostesAsync(int empresaId, DateTime? fechaDesde, DateTime? fechaHasta, string estado)
+        public async Task<List<FacturaRepostes>> GetFacturaRepostesAsync(FacturaRepostes filtro)
         {
             try 
             {
-                _logger.LogInformation($"Ejecucion del proceso almacenado sp_Reporte_Facturas para la empresa {empresaId} desde {fechaDesde} hasta {fechaHasta} con estado {estado}");
+                _logger.LogInformation($"Ejecucion del proceso almacenado sp_Reporte_Facturas para la empresa {filtro.EmpresaId} desde {filtro.FechaDesde} hasta {filtro.FechaHasta}");
                 using (SqlConnection connection = new SqlConnection(_connectionString)) 
                 {
                     using (SqlCommand command = new SqlCommand("sp_Reporte_Facturas", connection))
                     {
                         command.CommandType = System.Data.CommandType.StoredProcedure;
-                        command.Parameters.AddWithValue("@EmpresaId", empresaId);
-                        command.Parameters.AddWithValue("@FechaDesde", fechaDesde);
-                        command.Parameters.AddWithValue("@FechaHasta", fechaHasta);
-                        command.Parameters.AddWithValue("@Estado", estado);
+                        command.Parameters.AddWithValue("@EmpresaId", filtro.EmpresaId);
+                        command.Parameters.AddWithValue("@FechaDesde", filtro.FechaDesde);
+                        command.Parameters.AddWithValue("@FechaHasta", filtro.FechaHasta);
 
                         await connection.OpenAsync();
 
@@ -47,18 +46,18 @@ namespace SGFE.Percistence.Repository.Repostes
                                     {
                                         EmpresaId = reader.GetInt32(reader.GetOrdinal("EmpresaId")),
                                         FechaDesde = reader.GetDateTime(reader.GetOrdinal("FechaDesde")),
-                                        FechaHasta = reader.GetDateTime(reader.GetOrdinal("FechaHasta")),
-                                        Estado = reader.GetBoolean(reader.GetOrdinal("Estado"))
+                                        FechaHasta = reader.GetDateTime(reader.GetOrdinal("FechaHasta"))
                                     };
                                     facturaList.Add(factura);
                                 }
-                                _logger.LogInformation($"Proceso almacenado sp_Reporte_Facturas ejecutado exitosamente para la empresa {empresaId} desde {fechaDesde} hasta {fechaHasta} con estado {estado}. Se obtuvieron {facturaList.Count} registros.");
+                                _logger.LogInformation($"Proceso almacenado sp_Reporte_Facturas ejecutado exitosamente para la empresa {filtro.EmpresaId} desde {filtro.FechaDesde} hasta {filtro.FechaHasta}. Se obtuvieron {facturaList.Count} registros.");
                                 return facturaList;
                             }
                             else
                             {
                                 _logger.LogInformation("No se encontraron los datos solicitados");
-                                throw new ArgumentException("No se encontraron los datos solicitados");
+                                return null;
+                                //throw new ArgumentException("No se encontraron los datos solicitados");
                             }
                         }
                     }
@@ -66,25 +65,25 @@ namespace SGFE.Percistence.Repository.Repostes
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error al obtener el reporte de facturas para la empresa {empresaId} desde {fechaDesde} hasta {fechaHasta} con estado {estado}");
+                _logger.LogError(ex, $"Error al obtener el reporte de facturas para la empresa {filtro.EmpresaId} desde {filtro.FechaDesde} hasta {filtro.FechaHasta}");
                 throw;
             }
         }
 
-        public async Task<List<ResumenFacturas>> GetResumenFacturasAsync(int empresaId, int? anio, int? mes)
+        public async Task<List<ResumenFacturas>> GetResumenFacturasAsync(ResumenFacturas filtro)
         {
             try
             {
-                _logger.LogInformation($"Ejecucion del proceso almacenado sp_Reporte_ResumenFacturaspara la empresa {empresaId} en el año {anio} y mes {mes}");
+                _logger.LogInformation($"Ejecucion del proceso almacenado sp_Reporte_ResumenFacturaspara la empresa {filtro.EmpresaId} en el año {filtro.Anio} y mes {filtro.Mes}");
 
                 using (SqlConnection connection = new SqlConnection(_connectionString)) 
                 {
                     using (SqlCommand command = new SqlCommand("sp_Reporte_ResumenFacturas", connection))
                     {
                         command.CommandType = System.Data.CommandType.StoredProcedure;
-                        command.Parameters.AddWithValue("@EmpresaId", empresaId);
-                        command.Parameters.AddWithValue("@Anio", anio);
-                        command.Parameters.AddWithValue("@Mes", mes);
+                        command.Parameters.AddWithValue("@EmpresaId", filtro.EmpresaId);
+                        command.Parameters.AddWithValue("@Anio", filtro.Anio);
+                        command.Parameters.AddWithValue("@Mes", filtro.Mes);
 
                         await connection.OpenAsync();
 
@@ -104,12 +103,13 @@ namespace SGFE.Percistence.Repository.Repostes
                                     };
                                     resumenList.Add(resumen);
                                 }
-                                _logger.LogInformation($"Proceso almacenado sp_Reporte_ResumenFacturas ejecutado exitosamente para la empresa {empresaId} en el año {anio} y mes {mes}. Se obtuvieron {resumenList.Count} registros.");
+                                _logger.LogInformation($"Proceso almacenado sp_Reporte_ResumenFacturas ejecutado exitosamente para la empresa {filtro.EmpresaId} en el año {filtro.Anio} y mes {filtro.Mes}. Se obtuvieron {resumenList.Count} registros.");
                                 return resumenList;
                             }
                             else {
                                 _logger.LogInformation("No se encontraron los datos solicitados");
-                                throw new ArgumentException("No se encontraron los datos solicitados");
+                                return null;
+                                //throw new ArgumentException("No se encontraron los datos solicitados");
                             }
                         }
                     }
@@ -117,7 +117,7 @@ namespace SGFE.Percistence.Repository.Repostes
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error al obtener el resumen de facturas para la empresa {empresaId} en el año {anio} y mes {mes}");
+                _logger.LogError(ex, $"Error al obtener el resumen de facturas para la empresa {filtro.EmpresaId} en el año {filtro.Anio} y mes {filtro.Mes}");
                 throw;
             }
         }
