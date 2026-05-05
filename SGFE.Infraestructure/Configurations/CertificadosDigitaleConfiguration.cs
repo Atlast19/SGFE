@@ -25,11 +25,6 @@ namespace SGFE.Domein.Entitys.Configurations
                 .IsRequired()
                 .HasMaxLength(500);
 
-            entity.HasOne(d => d.Empresa).WithMany(p => p.CertificadosDigitales)
-                .HasForeignKey(d => d.EmpresaId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Certifica__Empre__17F790F9");
-
             OnConfigurePartial(entity);
         }
 

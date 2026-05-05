@@ -1,15 +1,13 @@
-﻿namespace SGFE.Domein.Entitys 
+﻿
+
+namespace SGFE.Application.Models.CertificadosDigitales
 {
-    public class CertificadosDigital
+    public class CreateCertificadoDigitalModel
     {
-        public int Id { get; set; }
         public string NombreArchivo { get; set; }
         public string RutaArchivo { get; set; }
         public byte[] ArchivoCertificado { get; set; }
         public string PasswordEncriptada { get; set; }
         public DateTime? FechaVencimiento { get; set; }
-        public bool? Activo { get; set; }
-        public DateTime? FechaCreacion { get; set; }
-        public virtual Empresa Empresa { get; set; }
     }
 }

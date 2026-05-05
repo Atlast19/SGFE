@@ -21,9 +21,9 @@ public partial class SecuenciaNCF
 
     public int RangoFin { get; set; }
 
-    public DateOnly VigenciaDesde { get; set; }
+    public DateTime VigenciaDesde { get; set; }
 
-    public DateOnly VigenciaHasta { get; set; }
+    public DateTime VigenciaHasta { get; set; }
 
     public bool? Activo { get; set; }
 

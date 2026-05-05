@@ -4,9 +4,8 @@ namespace SGFE.Domein.Interfaces.CertificadosDigitales
 {
     public interface ICertificadosDigitalRepository
     {
-        Task CrearCertificadoDigitalAsync(CertificadosDigital entoty);
+        Task UploadCertificadoDigitalAsync(CertificadosDigital entity);
 
-        Task<CertificadosDigital> GetEstadoCertificadoDigalAsync(int EmpresaID);
     }
 }
  

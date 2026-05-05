@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SGFE.Domein.Entitys;
 using SGFE.Domein.Interfaces.CertificadosDigitales;
+using System.Data;
 
 namespace SGFE.Percistence.Repository.CertificadosDigitales
 {
@@ -19,49 +20,42 @@ namespace SGFE.Percistence.Repository.CertificadosDigitales
             _connectionString = _configuration.GetConnectionString("DefaultConnection");
         }
 
-        public Task CrearCertificadoDigitalAsync(CertificadosDigital entoty)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<CertificadosDigital> GetEstadoCertificadoDigalAsync(int EmpresaID)
+        public async Task UploadCertificadoDigitalAsync(CertificadosDigital entity)
         {
             try
             {
-                _logger.LogInformation("Ejecucion del proceso almacenado sp_CertificadosDigitales_ObtenerEstado para la empresa con ID {EmpresaID}", EmpresaID);
+                // 🔐 Encriptar password
+                byte[] passwordEncriptado = EncriptarPassword(entity.PasswordEncriptada);
 
-                using (SqlConnection connection = new SqlConnection(_connectionString))
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                using (SqlCommand cmd = new SqlCommand("sp_InsertarCertificadoDigital", conn))
                 {
-                    using (SqlCommand command = new SqlCommand("sp_CertificadosDigitales_ObtenerEstado", connection))
-                    {
-                        command.CommandType = System.Data.CommandType.StoredProcedure;
-                        command.Parameters.AddWithValue("@EmpresaID", EmpresaID);
-                        await connection.OpenAsync();
-                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
-                        {
-                            if (await reader.ReadAsync())
-                            {
-                                CertificadosDigital certificado = new CertificadosDigital
-                                {
-                                    Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                                    Activo = reader.IsDBNull(reader.GetOrdinal("Activo")) ? (bool?)null : reader.GetBoolean(reader.GetOrdinal("Activo")),
-                                    FechaVencimiento = reader.IsDBNull(reader.GetOrdinal("FechaExpiracion")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("FechaExpiracion"))
-                                };
-                                return certificado;
-                            }
-                            else
-                            {
-                                return null;
-                            }
-                        }
-                    }
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.AddWithValue("@NombreArchivo", entity.NombreArchivo);
+                    cmd.Parameters.Add("@ArchivoCertificado", SqlDbType.VarBinary).Value = entity.ArchivoCertificado;
+                    cmd.Parameters.Add("@PasswordEncriptada", SqlDbType.VarBinary).Value = passwordEncriptado;
+                    cmd.Parameters.AddWithValue("@FechaVencimiento", entity.FechaVencimiento);
+                    cmd.Parameters.AddWithValue("@Activo", entity.Activo);
+
+                    await conn.OpenAsync();
+                    await cmd.ExecuteNonQueryAsync();
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al obtener el estado del certificado digital para la empresa con ID {EmpresaID}", EmpresaID);
+                _logger.LogError(ex, "Error al guardar certificado digital");
                 throw;
             }
         }
+
+
+        // Ejemplo simple de encriptación (puedes mejorar luego)
+        private byte[] EncriptarPassword(string password)
+        {
+            return System.Text.Encoding.UTF8.GetBytes(password);
+        }
+
+
     }
 }
