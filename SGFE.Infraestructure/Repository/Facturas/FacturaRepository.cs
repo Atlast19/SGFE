@@ -1,6 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using SGFE.Application.Interfaces.SessionContext;
 using SGFE.Domein.Entitys;
 using SGFE.Domein.Interfaces.Facturas;
 using System.Data;
@@ -9,70 +9,65 @@ namespace SGFE.Percistence.Repository.Facturas
 {
     public class FacturaRepository : IFacturaRepository
     {
-        private readonly IConfiguration _configuration;
+        private readonly ISqlConnectionFactory _connectionFactory;
         private readonly ILogger<FacturaRepository> _logger;
-        private readonly string _connectionString;  
 
-        public FacturaRepository(IConfiguration configuration, ILogger<FacturaRepository> logger)
+
+        public FacturaRepository(ISqlConnectionFactory connectionFactory, ILogger<FacturaRepository> logger)
         {
-            _configuration = configuration;
+            _connectionFactory = connectionFactory;
             _logger = logger;
-            _connectionString = _configuration.GetConnectionString("DefaultConnection");
         }
-        public async Task CreateFacturaAsync(Factura factura, List<FacturaDetalle> detalles)
+        public async Task<(int facturaId, string ncf)> CreateFacturaAsync(Factura factura, List<FacturaDetalle> detalles)
         {
             try
             {
                 _logger.LogInformation("Ejecutando sp_Factura_Crear");
 
-                using (SqlConnection connection = new SqlConnection(_connectionString))
-                using (SqlCommand cmd = new SqlCommand("sp_Factura_Crear", connection))
+                using (SqlConnection conn = await _connectionFactory.CreateConnectionAsync())
+                using (SqlCommand cmd = new SqlCommand("sp_Factura_Crear", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    // Parámetros de entrada
                     cmd.Parameters.AddWithValue("@EmpresaId", factura.EmpresaId);
                     cmd.Parameters.AddWithValue("@ClienteId", factura.ClienteId);
                     cmd.Parameters.AddWithValue("@TipoECFId", factura.TipoECFId);
-                    cmd.Parameters.AddWithValue("@FechaEmision", factura.FechaEmision == DateTime.MinValue ? (object)DBNull.Value : factura.FechaEmision);
 
-                    // Parámetro tipo tabla para detalles
-                    var detallesTable = new DataTable();
-                    detallesTable.Columns.Add("Descripcion", typeof(string));
-                    detallesTable.Columns.Add("Cantidad", typeof(decimal));
-                    detallesTable.Columns.Add("PrecioUnitario", typeof(decimal));
-                    detallesTable.Columns.Add("Monto", typeof(decimal));
-                    detallesTable.Columns.Add("Itbis", typeof(decimal));
-                    detallesTable.Columns.Add("Descuento", typeof(decimal));
+                    // TVP (MUY IMPORTANTE)
+                    var table = new DataTable();
+                    table.Columns.Add("Descripcion", typeof(string));
+                    table.Columns.Add("Cantidad", typeof(decimal));
+                    table.Columns.Add("PrecioUnitario", typeof(decimal));
+                    table.Columns.Add("Monto", typeof(decimal));
+                    table.Columns.Add("Itbis", typeof(decimal));
+                    table.Columns.Add("Descuento", typeof(decimal));
 
-                    foreach (var detalle in detalles)
+                    foreach (var d in detalles)
                     {
-                        decimal monto = detalle.Cantidad * detalle.PrecioUnitario;
-                        detallesTable.Rows.Add(
-                            detalle.Descripcion,
-                            detalle.Cantidad,
-                            detalle.PrecioUnitario,
-                            monto,
-                            detalle.Itbis,
-                            detalle.Descuento
-                        );
+                        table.Rows.Add(d.Descripcion, d.Cantidad, d.PrecioUnitario, d.Monto, d.Itbis, d.Descuento);
                     }
 
-                    var tvpParam = cmd.Parameters.AddWithValue("@Detalles", detallesTable);
-                    tvpParam.SqlDbType = SqlDbType.Structured;
-                    tvpParam.TypeName = "dbo.FacturaDetalleType";
+                    var paramDetalles = cmd.Parameters.AddWithValue("@Detalles", table);
+                    paramDetalles.SqlDbType = SqlDbType.Structured;
+                    paramDetalles.TypeName = "dbo.FacturaDetalleType";
 
-                   
-                    var facturaIdOut = cmd.Parameters.Add("@FacturaId", SqlDbType.Int);
-                    facturaIdOut.Direction = ParameterDirection.Output;
-                    var ncfOut = cmd.Parameters.Add("@NCF", SqlDbType.NVarChar, 19);
-                    ncfOut.Direction = ParameterDirection.Output;
+                    // OUTPUTS
+                    var paramFacturaId = new SqlParameter("@FacturaId", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
 
-                    await connection.OpenAsync();
+                    var paramNCF = new SqlParameter("@NCF", SqlDbType.NVarChar, 19)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+
+                    cmd.Parameters.Add(paramFacturaId);
+                    cmd.Parameters.Add(paramNCF);
+
                     await cmd.ExecuteNonQueryAsync();
 
-                    
-                    _logger.LogInformation("Factura creada con Id: {FacturaId}, NCF: {NCF}", facturaIdOut.Value, ncfOut.Value);
+                    return ((int)paramFacturaId.Value, paramNCF.Value.ToString());
                 }
             }
             catch (Exception ex)
@@ -86,66 +81,88 @@ namespace SGFE.Percistence.Repository.Facturas
         {
             try
             {
-                _logger.LogInformation("Ejecutando sp_Factura_ObtenerPorId para FacturaId: {FacturaId}", FacturaId);
+                Factura factura = null;
+                
 
-                using (SqlConnection connection = new SqlConnection(_connectionString))
+                using (SqlConnection conn = await _connectionFactory.CreateConnectionAsync())
+                using (SqlCommand cmd = new SqlCommand("sp_Factura_ObtenerPorId", conn))
                 {
-                    using (SqlCommand cmd = new SqlCommand("sp_Factura_ObtenerPorId", connection))
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@FacturaId", FacturaId);
+
+
+                    using (var reader = await cmd.ExecuteReaderAsync())
                     {
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.Parameters.AddWithValue("@FacturaId", FacturaId);
-                        
-                        await connection.OpenAsync();
-                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                        // 1. CABECERA
+                        if (await reader.ReadAsync())
                         {
-                            Factura factura = null;
-                            
-                            if (await reader.ReadAsync())
+                            factura = new Factura
                             {
-                                factura = new Factura
+                                Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                NCF = reader.GetString(reader.GetOrdinal("NCF")),
+                                TipoECFId = reader.GetInt32(reader.GetOrdinal("TipoECFId")),
+                                TiposECF = reader.GetString(reader.GetOrdinal("Codigo")),
+                                FechaEmision = reader.GetDateTime(reader.GetOrdinal("FechaEmision")),
+                                MontoTotal = reader.GetDecimal(reader.GetOrdinal("MontoTotal")),
+                                ItbisTotal = reader.GetDecimal(reader.GetOrdinal("ItbisTotal")),
+                                SubTotal = reader.GetDecimal(reader.GetOrdinal("SubTotal")),
+                                Estado = reader.GetString(reader.GetOrdinal("Estado")),
+                                TrackId = reader["TrackId"]?.ToString(),
+
+                                ClienteNombre = reader["Nombre"]?.ToString(),
+                                ClienteDocumento = reader["Documento"]?.ToString(),
+
+                                FacturaDetalles = new List<FacturaDetalle>()
+                            };
+                        }
+
+                        // 2. DETALLES
+                        if (factura != null && await reader.NextResultAsync())
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                factura.FacturaDetalles.Add(new FacturaDetalle
                                 {
                                     Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                                    NCF = reader.GetString(reader.GetOrdinal("NCF")),
-                                    FechaEmision = reader.GetDateTime(reader.GetOrdinal("FechaEmision")),
-                                    MontoTotal = reader.GetDecimal(reader.GetOrdinal("MontoTotal")),
-                                    ItbisTotal = reader.GetDecimal(reader.GetOrdinal("ItbisTotal")),
-                                    Estado = reader.GetString(reader.GetOrdinal("Estado")),
-                                    TrackId = reader.IsDBNull(reader.GetOrdinal("TrackId")) ? null : reader.GetString(reader.GetOrdinal("TrackId")),
-                                };
+                                    Descripcion = reader.GetString(reader.GetOrdinal("Descripcion")),
+                                    Cantidad = reader.GetDecimal(reader.GetOrdinal("Cantidad")),
+                                    PrecioUnitario = reader.GetDecimal(reader.GetOrdinal("PrecioUnitario")),
+                                    Monto = reader.GetDecimal(reader.GetOrdinal("Monto")),
+                                    Itbis = reader.GetDecimal(reader.GetOrdinal("Itbis")),
+                                    Descuento = reader.GetDecimal(reader.GetOrdinal("Descuento"))
+                                });
                             }
-                            if (factura == null)
-                            {
-                                _logger.LogError("No se encontró factura con Id: {FacturaId}", FacturaId);
-                                throw new ArgumentNullException($"No se encontró factura con Id: {FacturaId}");
-                            }
-                            
-                            if (await reader.NextResultAsync())
-                            {
-                                var detalles = new List<FacturaDetalle>();
-                                while (await reader.ReadAsync())
-                                {
-                                    var detalle = new FacturaDetalle
-                                    {
-                                        Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                                        Descripcion = reader.GetString(reader.GetOrdinal("Descripcion")),
-                                        Cantidad = reader.GetDecimal(reader.GetOrdinal("Cantidad")),
-                                        PrecioUnitario = reader.GetDecimal(reader.GetOrdinal("PrecioUnitario")),
-                                        Monto = reader.GetDecimal(reader.GetOrdinal("Monto")),
-                                        Itbis = reader.GetDecimal(reader.GetOrdinal("Itbis")),
-                                        Descuento = reader.GetDecimal(reader.GetOrdinal("Descuento"))
-                                    };
-                                    detalles.Add(detalle);
-                                }
-                                factura.FacturaDetalles = detalles; 
-                            }
-                            return factura;
                         }
                     }
                 }
+
+                return factura;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al obtener factura por Id: {FacturaId}", FacturaId);
+                throw;
+            }
+        }
+
+        public async Task GuardarXmlAsync(int facturaId, string xml)
+        {
+            try
+            {
+                using (SqlConnection conn = await _connectionFactory.CreateConnectionAsync())
+                using (SqlCommand cmd = new SqlCommand("sp_Factura_GuardarXml", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.AddWithValue("@FacturaId", facturaId);
+                    cmd.Parameters.AddWithValue("@XmlGenerado", xml);
+
+                    await cmd.ExecuteNonQueryAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al guardar XML de la factura");
                 throw;
             }
         }
@@ -156,7 +173,7 @@ namespace SGFE.Percistence.Repository.Facturas
             {
                 _logger.LogInformation("Ejecutando sp_Factura_ActualizarDGIIResponse para FacturaId: {FacturaId}, TrackId: {TrackId}, Estado: {Estado}", facturaId, trackId, estado);
 
-                using (SqlConnection connection = new SqlConnection(_connectionString))
+                using (SqlConnection connection = await _connectionFactory.CreateConnectionAsync())
                 {
                     using (SqlCommand cmd = new SqlCommand("sp_Factura_ActualizarDGIIResponse", connection))
                     {
@@ -167,7 +184,6 @@ namespace SGFE.Percistence.Repository.Facturas
                         cmd.Parameters.AddWithValue("@RespuestaDGII", respuestaDGII ?? (object)DBNull.Value);
                         cmd.Parameters.AddWithValue("@FechaEnvio", fechaEnvio ?? (object)DBNull.Value);
                         
-                        await connection.OpenAsync();
                         await cmd.ExecuteNonQueryAsync();
                     }
                 }
@@ -185,7 +201,7 @@ namespace SGFE.Percistence.Repository.Facturas
             {
                 _logger.LogInformation("Ejecutando sp_Factura_ActualizarEstado para FacturaId: {FacturaId}, Estado: {Estado}", facturaId, estado);
 
-                using (SqlConnection connection = new SqlConnection(_connectionString)) 
+                using (SqlConnection connection = await _connectionFactory.CreateConnectionAsync()) 
                 {
                     using (SqlCommand cmd = new SqlCommand("sp_Factura_ActualizarEstado", connection))
                     {
@@ -193,7 +209,6 @@ namespace SGFE.Percistence.Repository.Facturas
                         cmd.Parameters.AddWithValue("@FacturaId", facturaId);
                         cmd.Parameters.AddWithValue("@Estado", estado);
 
-                        await connection.OpenAsync();
                         await cmd.ExecuteNonQueryAsync();
                     }
                 }

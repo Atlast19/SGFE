@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SGFE.Application.Interfaces.Roles;
 using SGFE.Application.Models.Roles;
 
@@ -15,6 +16,7 @@ namespace SGFE.Api.Controllers.Roles
             _servicer = servicer;
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpPost("CreateRolAsync")]
         public async Task<IActionResult> CreateRolAsync([FromBody] CreateRolModel model)
         {
@@ -32,6 +34,8 @@ namespace SGFE.Api.Controllers.Roles
             
         }
 
+
+        [Authorize(Roles = "Administrador")]
         [HttpGet("GetAllRolesAsync")]
         public async Task<IActionResult> GetAllRolesAsync()
         {
@@ -48,6 +52,8 @@ namespace SGFE.Api.Controllers.Roles
             return Ok(result);
         }
 
+
+        [Authorize(Roles = "Administrador")]
         [HttpGet("GetRolByIdAsync/{roleId}")]
         public async Task<IActionResult> GetRoleByIdAsync(int roleId)
         {
@@ -64,6 +70,8 @@ namespace SGFE.Api.Controllers.Roles
             return Ok(result);
         }
 
+
+        [Authorize(Roles = "Administrador")]
         [HttpDelete("DeleteRolAsync/{roleId}")]
         public async Task<IActionResult> DeleteRoleAsync(int roleId)
         {
@@ -80,6 +88,8 @@ namespace SGFE.Api.Controllers.Roles
             return Ok(result);
         }
 
+
+        [Authorize(Roles = "Administrador")]
         [HttpPut("UpdateRoleAsync")]
         public async Task<IActionResult> UpdateRoleAsync([FromBody] UpdateRolModel model) 
         {

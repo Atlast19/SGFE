@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using SGFE.Application.Interfaces.SessionContext;
 using SGFE.Domein.Entitys;
 using SGFE.Domein.Interfaces.TiposECF;
 
@@ -8,15 +9,15 @@ namespace SGFE.Percistence.Repository.TiposECF
 {
     public class TiposECFRepository : ITipoECFRepository
     {
-        private readonly IConfiguration _configuration;
+        private readonly ISqlConnectionFactory _connectionFactory;
         private readonly ILogger<TiposECFRepository> _logger;
-        private readonly string _connectionString;
 
-        public TiposECFRepository(IConfiguration configuration, ILogger<TiposECFRepository> logger)
+
+        public TiposECFRepository(ISqlConnectionFactory connectionFactory, ILogger<TiposECFRepository> logger)
         {
-            _configuration = configuration;
+            _connectionFactory = connectionFactory;
             _logger = logger;
-            _connectionString = _configuration.GetConnectionString("DefaultConnection");
+
         }
 
         public async Task<TipoECF> CrearTiposECFAsync(TipoECF entity)
@@ -24,7 +25,7 @@ namespace SGFE.Percistence.Repository.TiposECF
             try 
             {
                 _logger.LogInformation("Ejecucion del proceso almacenado sp_TiposECF_Crear");
-                using (SqlConnection connection = new SqlConnection(_connectionString)) 
+                using (SqlConnection connection = await _connectionFactory.CreateConnectionAsync()) 
                 {
                     using (SqlCommand command = new SqlCommand("sp_TipoECF_Crear", connection)) 
                     {
@@ -32,7 +33,6 @@ namespace SGFE.Percistence.Repository.TiposECF
                         command.Parameters.AddWithValue("@Codigo", entity.Codigo);
                         command.Parameters.AddWithValue("@Descripcion", entity.Descripcion);
 
-                        await connection.OpenAsync();
                         var rowAffected = await command.ExecuteNonQueryAsync();
 
                         if (rowAffected > 0) 
@@ -65,14 +65,13 @@ namespace SGFE.Percistence.Repository.TiposECF
             try 
             {
                 _logger.LogInformation($"Ejecucion del proceso almacenado sp_TiposECF_Eliminarpara el Id {id}");
-                using (SqlConnection connection = new SqlConnection(_connectionString)) 
+                using (SqlConnection connection = await _connectionFactory.CreateConnectionAsync()) 
                 {
                     using (SqlCommand command = new SqlCommand("sp_TiposECF_Eliminar", connection)) 
                     {
                         command.CommandType = System.Data.CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@Id", id);
 
-                        await connection.OpenAsync();
                         var rowAffected = await command.ExecuteNonQueryAsync();
                         if (rowAffected > 0) 
                         {
@@ -100,12 +99,12 @@ namespace SGFE.Percistence.Repository.TiposECF
             {
                 _logger.LogInformation("Ejecucion del proceso almacenado sp_TiposECF_ObtenerTodos");
 
-                using (SqlConnection connection = new SqlConnection(_connectionString)) 
+                using (SqlConnection connection = await _connectionFactory.CreateConnectionAsync()) 
                 {
                     using (SqlCommand command = new SqlCommand("sp_TipoECF_ObtenerTodos", connection)) 
                     {
                         command.CommandType = System.Data.CommandType.StoredProcedure;
-                        await connection.OpenAsync();
+
                         using (SqlDataReader reader = await command.ExecuteReaderAsync()) 
                         {
                             var tiposECFList = new List<TipoECF>();
@@ -147,14 +146,14 @@ namespace SGFE.Percistence.Repository.TiposECF
             try 
             {
                 _logger.LogInformation($"Ejecucion del proceso almacenado sp_TipoECF_ObtenerPorId para el Id {id}");
-                using (SqlConnection connection = new SqlConnection(_connectionString)) 
+                using (SqlConnection connection = await _connectionFactory.CreateConnectionAsync()) 
                 {
                     using (SqlCommand command = new SqlCommand("sp_TiposECF_ObtenerPorId", connection)) 
                     {
                         command.CommandType = System.Data.CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@Id", id);
 
-                        await connection.OpenAsync();
+                        
                         using (SqlDataReader reader = await command.ExecuteReaderAsync()) 
                         {
                             if (await reader.ReadAsync()) 
@@ -189,7 +188,7 @@ namespace SGFE.Percistence.Repository.TiposECF
             try 
             {
                 _logger.LogInformation($"Ejecucion del proceso almacenado sp_TiposECF_Actualizar para el Id {entity.Id}");
-                using (SqlConnection connection = new SqlConnection(_connectionString)) 
+                using (SqlConnection connection = await _connectionFactory.CreateConnectionAsync()) 
                 {
                     using (SqlCommand command = new SqlCommand("sp_TiposECF_Actualizar", connection)) 
                     {
@@ -198,7 +197,7 @@ namespace SGFE.Percistence.Repository.TiposECF
                         command.Parameters.AddWithValue("@Codigo", entity.Codigo);
                         command.Parameters.AddWithValue("@Descripcion", entity.Descripcion);
 
-                        await connection.OpenAsync();
+                        
                         var rowAffected = await command.ExecuteNonQueryAsync();
 
                         if (rowAffected > 0) 

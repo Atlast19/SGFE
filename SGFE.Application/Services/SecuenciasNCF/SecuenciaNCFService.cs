@@ -14,33 +14,9 @@ namespace SGFE.Application.Services.SecuenciasNCF
             _repository = repository;
         }
 
-        public async Task<GetNCFResponseModel> GetNextSecuenciaNCFAsync(CreateSecuenciaNCFModel request)
-        {
-
-            ////  Validaciones básicas ----- validar con fluent validation
-            //if (request.EmpresaId <= 0)
-            //    throw new ArgumentException("EmpresaId inválido");
-
-            //if (request.TipoECFId <= 0)
-            //    throw new ArgumentException("TipoECFId inválido");
-
-
-
-            // Obtener NCF desde DB (SP)
-            var ncf = await _repository.GetNextSecuenciaNCFAsync(request.EmpresaId, request.TipoECFId);
-
-            if (string.IsNullOrEmpty(ncf))
-                throw new Exception("No se pudo generar el NCF");
-
-            return new GetNCFResponseModel
-            {
-                NCF = ncf
-            };
-        }
-
         public async Task RegistrarAsync(RegistrarSecuenciaNCFModel model)
         {
-            // 🔥 Validaciones importantes
+            // Validaciones importantes
             if (model.RangoInicio >= model.RangoFin)
                 throw new Exception("El rango es inválido");
 

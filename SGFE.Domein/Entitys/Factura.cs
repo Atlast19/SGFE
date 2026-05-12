@@ -25,6 +25,8 @@ public partial class Factura
 
     public decimal ItbisTotal { get; set; }
 
+    public decimal SubTotal { get; set; }
+
     public decimal? OtrosImpuestos { get; set; }
 
     public string Estado { get; set; }
@@ -42,6 +44,12 @@ public partial class Factura
     public DateTime? FechaCreacion { get; set; }
 
     public DateTime? FechaActualizacion { get; set; }
+
+    public string ClienteNombre { get; set; }
+
+    public string ClienteDocumento { get; set; }
+
+    public string TiposECF { get; set; }
 
     public virtual Cliente Cliente { get; set; }
 

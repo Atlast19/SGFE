@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SGFE.Application.Interfaces.Clientes;
 using SGFE.Application.Models.Clientes;
 
@@ -15,6 +16,7 @@ namespace SGFE.Api.Controllers.Clientes
             _service = service;
         }
 
+        [Authorize]
         [HttpPost("CreateClieteAsync")]
         public async Task<IActionResult> CreateClienteAsync([FromBody] CreateClienteModel model)
         {
@@ -31,6 +33,7 @@ namespace SGFE.Api.Controllers.Clientes
             return Ok(result);
         }
 
+        [Authorize]
         [HttpGet("GetAllClientesAsync")]
         public async Task<IActionResult> GetAllClienteAsync()
         {
@@ -47,6 +50,7 @@ namespace SGFE.Api.Controllers.Clientes
             return Ok(result);
         }
 
+        [Authorize]
         [HttpGet("GetClieteByIdAsync/{Id}")]
         public async Task<IActionResult> GetClienteByAsync(int Id)
         {
@@ -63,6 +67,7 @@ namespace SGFE.Api.Controllers.Clientes
             return Ok(result);
         }
 
+        [Authorize]
         [HttpGet("GetClienteByEmpresaId/{EmpresaId}")]
         public async Task<IActionResult> GetClienteByEmpresaId(int EmpresaId) 
         {
@@ -79,6 +84,7 @@ namespace SGFE.Api.Controllers.Clientes
             return Ok(result);
         }
 
+        [Authorize]
         [HttpDelete("DeleteClieteAsync/{Id}")]
         public async Task<IActionResult> DeleteClienteAsync(int Id) 
         {
@@ -95,6 +101,7 @@ namespace SGFE.Api.Controllers.Clientes
             return Ok(result);
         }
 
+        [Authorize]
         [HttpPut("UpdateClienteAsync")]
         public async Task<IActionResult> UpdateClienteAsync(UpdateClienteModel model) 
         {

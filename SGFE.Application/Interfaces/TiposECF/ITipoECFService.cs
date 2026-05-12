@@ -4,10 +4,10 @@ namespace SGFE.Application.Interfaces.TiposECF
 {
     public interface ITipoECFService
     {
-        Task<CreateTipoECF> CrearTiposECFAsync(CreateTipoECF model);
-        Task<List<GetTipoECF>> GetAllTiposECFAsync();
-        Task<GetTipoECF> DeleteTipoECFAsync(int id);
-        Task<GetTipoECF> GetTipoECFByIdAsync(int id);
-        Task<UpdateTipoECF> UpdateTipoECFAsync(UpdateTipoECF model);
+        Task<CreateTipoECFModel> CrearTiposECFAsync(CreateTipoECFModel model);
+        Task<List<GetTipoECFModel>> GetAllTiposECFAsync();
+        Task<GetTipoECFModel> DeleteTipoECFAsync(int id);
+        Task<GetTipoECFModel> GetTipoECFByIdAsync(int id);
+        Task<UpdateTipoECFModel> UpdateTipoECFAsync(UpdateTipoECFModel model);
     }
 }

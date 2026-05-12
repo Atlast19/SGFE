@@ -1,6 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using SGFE.Application.Interfaces.SessionContext;
 using SGFE.Domein.Entitys;
 using SGFE.Domein.Interfaces.Roles;
 
@@ -8,15 +8,13 @@ namespace SGFE.Percistence.Repository.Roles
 {
     public class RolRepository : IRolRepository
     {
-        private readonly IConfiguration _configuration;
+        private readonly ISqlConnectionFactory _connectionFactory;
         private readonly ILogger<RolRepository> _logger;
-        private readonly string _connectionString;
 
-        public RolRepository(IConfiguration configuration, ILogger<RolRepository> logger)
+        public RolRepository(ISqlConnectionFactory connectionFactory, ILogger<RolRepository> logger)
         {
-            _configuration = configuration;
+            _connectionFactory = connectionFactory;
             _logger = logger;
-            _connectionString = _configuration.GetConnectionString("DefaultConnection");
         }
 
         public async Task<Rol> CreateRoleAsync(Rol entity)
@@ -25,7 +23,7 @@ namespace SGFE.Percistence.Repository.Roles
             {
                 _logger.LogInformation("Ejecucion del proceso almacenado sp_Rol_Crear");
 
-                using (SqlConnection connection = new SqlConnection(_connectionString))
+                using (SqlConnection connection = await _connectionFactory.CreateConnectionAsync())
                 {
                     using (SqlCommand command = new SqlCommand("sp_Role_Crear", connection))
                     {
@@ -33,7 +31,7 @@ namespace SGFE.Percistence.Repository.Roles
                         command.Parameters.AddWithValue("@Nombre", entity.Nombre);
                         command.Parameters.AddWithValue("@Descripcion", entity.Descripcion);
 
-                        await connection.OpenAsync();
+
                         var rowsAffected = await command.ExecuteNonQueryAsync();
 
                         if (rowsAffected > 0)
@@ -65,14 +63,13 @@ namespace SGFE.Percistence.Repository.Roles
         {
             try 
             {
-                using (SqlConnection connection = new SqlConnection(_connectionString)) 
+                using (SqlConnection connection = await _connectionFactory.CreateConnectionAsync()) 
                 {
                     using (SqlCommand command = new SqlCommand("sp_Role_Desactivar", connection)) 
                     {
                         command.CommandType = System.Data.CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@Id", RoleId);
 
-                        await connection.OpenAsync();
                         var rowsAffected = await command.ExecuteNonQueryAsync();
 
                         if (rowsAffected > 0)
@@ -106,12 +103,11 @@ namespace SGFE.Percistence.Repository.Roles
             {
                 _logger.LogInformation("Ejecucion del proceso almacenado sp_Rol_ObtenerTodos");
 
-                using (SqlConnection connection = new SqlConnection(_connectionString)) 
+                using (SqlConnection connection = await _connectionFactory.CreateConnectionAsync()) 
                 {
                     using (SqlCommand command = new SqlCommand("sp_Role_ObtenerTodos", connection)) 
                     {
                         command.CommandType = System.Data.CommandType.StoredProcedure;
-                        await connection.OpenAsync();
 
                         using (SqlDataReader reader = await command.ExecuteReaderAsync()) 
                         {
@@ -155,13 +151,13 @@ namespace SGFE.Percistence.Repository.Roles
             {
                 _logger.LogInformation("Ejecucion del proceso almacenado sp_Rol_ObtenerPorId");
 
-                using (SqlConnection connection = new SqlConnection(_connectionString)) 
+                using (SqlConnection connection = await _connectionFactory.CreateConnectionAsync()) 
                 {
                     using (SqlCommand command = new SqlCommand("sp_Role_ObtenerPorId", connection))
                     {
                         command.CommandType = System.Data.CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@Id", RoleId);
-                        await connection.OpenAsync();
+
                         using (SqlDataReader reader = await command.ExecuteReaderAsync())
                         {
                             if (await reader.ReadAsync())
@@ -195,7 +191,7 @@ namespace SGFE.Percistence.Repository.Roles
         {
             try
             {
-                using (SqlConnection connection = new SqlConnection(_connectionString)) 
+                using (SqlConnection connection = await _connectionFactory.CreateConnectionAsync()) 
                 {
                     using (SqlCommand command = new SqlCommand("sp_Role_Actualizar", connection)) 
                     {
@@ -203,7 +199,7 @@ namespace SGFE.Percistence.Repository.Roles
                         command.Parameters.AddWithValue("@Id", entity.Id);
                         command.Parameters.AddWithValue("@Nombre", entity.Nombre);
                         command.Parameters.AddWithValue("@Descripcion", entity.Descripcion);
-                        await connection.OpenAsync();
+
                         var rowsAffected = await command.ExecuteNonQueryAsync();
 
                         if (rowsAffected > 0) 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using SGFE.Application.Interfaces.SessionContext;
 using SGFE.Domein.Entitys.ReportesEntirys;
 using SGFE.Domein.Interfaces.Reportes;
 
@@ -8,22 +9,22 @@ namespace SGFE.Percistence.Repository.Repostes
 {
     public class ReposteRepository : IReporteRepository
     {
-        private readonly IConfiguration _configuration;
+        private readonly ISqlConnectionFactory _connectionFactory;
         private readonly ILogger<ReposteRepository> _logger;
-        private readonly string _connectionString;
 
-        public ReposteRepository(IConfiguration configuration, ILogger<ReposteRepository> logger)
+
+        public ReposteRepository(ISqlConnectionFactory connectionFactory, ILogger<ReposteRepository> logger)
         {
-            _configuration = configuration;
+            _connectionFactory = connectionFactory;
             _logger = logger;
-            _connectionString = _configuration.GetConnectionString("DefaultConnection");
+
         }
         public async Task<List<FacturaRepostes>> GetFacturaRepostesAsync(FacturaRepostes filtro)
         {
             try 
             {
                 _logger.LogInformation($"Ejecucion del proceso almacenado sp_Reporte_Facturas para la empresa {filtro.EmpresaId} desde {filtro.FechaDesde} hasta {filtro.FechaHasta}");
-                using (SqlConnection connection = new SqlConnection(_connectionString)) 
+                using (SqlConnection connection = await _connectionFactory.CreateConnectionAsync()) 
                 {
                     using (SqlCommand command = new SqlCommand("sp_Reporte_Facturas", connection))
                     {
@@ -32,7 +33,6 @@ namespace SGFE.Percistence.Repository.Repostes
                         command.Parameters.AddWithValue("@FechaDesde", filtro.FechaDesde);
                         command.Parameters.AddWithValue("@FechaHasta", filtro.FechaHasta);
 
-                        await connection.OpenAsync();
 
                         using (SqlDataReader reader = await command.ExecuteReaderAsync())
                         {
@@ -76,7 +76,7 @@ namespace SGFE.Percistence.Repository.Repostes
             {
                 _logger.LogInformation($"Ejecucion del proceso almacenado sp_Reporte_ResumenFacturaspara la empresa {filtro.EmpresaId} en el año {filtro.Anio} y mes {filtro.Mes}");
 
-                using (SqlConnection connection = new SqlConnection(_connectionString)) 
+                using (SqlConnection connection = await _connectionFactory.CreateConnectionAsync()) 
                 {
                     using (SqlCommand command = new SqlCommand("sp_Reporte_ResumenFacturas", connection))
                     {
@@ -84,8 +84,6 @@ namespace SGFE.Percistence.Repository.Repostes
                         command.Parameters.AddWithValue("@EmpresaId", filtro.EmpresaId);
                         command.Parameters.AddWithValue("@Anio", filtro.Anio);
                         command.Parameters.AddWithValue("@Mes", filtro.Mes);
-
-                        await connection.OpenAsync();
 
                         using (SqlDataReader reader = await command.ExecuteReaderAsync())
                         {
@@ -109,7 +107,6 @@ namespace SGFE.Percistence.Repository.Repostes
                             else {
                                 _logger.LogInformation("No se encontraron los datos solicitados");
                                 return null;
-                                //throw new ArgumentException("No se encontraron los datos solicitados");
                             }
                         }
                     }

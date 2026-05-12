@@ -14,7 +14,7 @@ namespace SGFE.Application.Services.TiposECF
             _repository = repository;
         }
 
-        public async Task<CreateTipoECF> CrearTiposECFAsync(CreateTipoECF model)
+        public async Task<CreateTipoECFModel> CrearTiposECFAsync(CreateTipoECFModel model)
         {
             var tipoECFEntity = new TipoECF
             {
@@ -27,21 +27,21 @@ namespace SGFE.Application.Services.TiposECF
             if (CreateTipoECF == null)
                 return null;
 
-            return new CreateTipoECF
+            return new CreateTipoECFModel
             {
                 Codigo = CreateTipoECF.Codigo,
                 Descripcion = CreateTipoECF.Descripcion
             };
         }
 
-        public async Task<GetTipoECF> DeleteTipoECFAsync(int id)
+        public async Task<GetTipoECFModel> DeleteTipoECFAsync(int id)
         {
             var deletedTipoECF = await _repository.DeleteTipoECFAsync(id);
 
             if (deletedTipoECF == null)
                 return null;
 
-            return new GetTipoECF
+            return new GetTipoECFModel
             {
                 Id = deletedTipoECF.Id,
                 Codigo = deletedTipoECF.Codigo,
@@ -49,14 +49,14 @@ namespace SGFE.Application.Services.TiposECF
             };
         }
 
-        public async Task<List<GetTipoECF>> GetAllTiposECFAsync()
+        public async Task<List<GetTipoECFModel>> GetAllTiposECFAsync()
         {
             var tiposECFEntities = await _repository.GetAllTiposECFAsync();
 
             if (tiposECFEntities == null)
                 return null;
 
-            return tiposECFEntities.Select(tipoECF => new GetTipoECF
+            return tiposECFEntities.Select(tipoECF => new GetTipoECFModel
             {
                 Id = tipoECF.Id,
                 Codigo = tipoECF.Codigo,
@@ -64,14 +64,14 @@ namespace SGFE.Application.Services.TiposECF
             }).ToList();
         }
 
-        public async Task<GetTipoECF> GetTipoECFByIdAsync(int id)
+        public async Task<GetTipoECFModel> GetTipoECFByIdAsync(int id)
         {
             var tipoECFEntity = await _repository.GetTipoECFByIdAsync(id);
 
             if (tipoECFEntity == null)
                 return null;
 
-            return new GetTipoECF
+            return new GetTipoECFModel
             {
                 Id = tipoECFEntity.Id,
                 Codigo = tipoECFEntity.Codigo,
@@ -79,7 +79,7 @@ namespace SGFE.Application.Services.TiposECF
             };
         }
 
-        public async Task<UpdateTipoECF> UpdateTipoECFAsync(UpdateTipoECF model)
+        public async Task<UpdateTipoECFModel> UpdateTipoECFAsync(UpdateTipoECFModel model)
         {
             var tipoECFEntity = new TipoECF
             {
@@ -93,7 +93,7 @@ namespace SGFE.Application.Services.TiposECF
             if (updatedTipoECF == null)
                 return null;
 
-            return new UpdateTipoECF
+            return new UpdateTipoECFModel
             {
                 Id = updatedTipoECF.Id,
                 Codigo = updatedTipoECF.Codigo,

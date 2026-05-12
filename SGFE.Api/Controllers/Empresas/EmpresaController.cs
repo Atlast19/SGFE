@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SGFE.Application.Interfaces.Empresas;
 using SGFE.Application.Models.Empresas;
 
@@ -15,6 +16,7 @@ namespace SGFE.Api.Controllers.Empresas
             _service = service;
         }
 
+        [Authorize]
         [HttpPost("CreateEmpresaAsync")]
         public async Task<IActionResult> CreateEmpresaAsync([FromBody] CreateEmpresaModel model)
         {
@@ -31,6 +33,7 @@ namespace SGFE.Api.Controllers.Empresas
             return Ok(result);
         }
 
+        [Authorize]
         [HttpGet("GetAllEmpresasAsync")]
         public async Task<IActionResult> GetAllEmpresasAsync()
         {
@@ -47,6 +50,7 @@ namespace SGFE.Api.Controllers.Empresas
             return Ok(result);
         }
 
+        [Authorize]
         [HttpGet("GetEmpresaByIdAsync/{id}")]
         public async Task<IActionResult> GetEmpresaByIdAsync(int id)
         {
@@ -61,7 +65,7 @@ namespace SGFE.Api.Controllers.Empresas
             return Ok(result);
         }
 
-
+        [Authorize]
         [HttpDelete("DeleteEmpresaAsync/{id}")]
         public async Task<IActionResult> DeleteEmpresaAsync(int id)
         { 
@@ -77,6 +81,7 @@ namespace SGFE.Api.Controllers.Empresas
             return Ok(result);
         }
 
+        [Authorize]
         [HttpPut("UpdateEmpresaAsync")]
         public async Task<IActionResult> UpdateEmpresaAsync([FromBody] UpdateEmpresaModel model)
         {

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using SGFE.Application.Interfaces.SessionContext;
 using SGFE.Domein.Entitys;
 using SGFE.Domein.Interfaces.Usuarios;
 
@@ -8,15 +9,13 @@ namespace SGFE.Percistence.Repository.Usuarios
 {
     public class UsuarioRepository : IUsuarioRepository
     {
-        private readonly IConfiguration _configuration;
         private readonly ILogger<UsuarioRepository> _logger;
-        private readonly string _connectionString;
+        private readonly ISqlConnectionFactory _connectionFactory;
 
-        public UsuarioRepository(IConfiguration configuration, ILogger<UsuarioRepository> logger)
+        public UsuarioRepository(ILogger<UsuarioRepository> logger, ISqlConnectionFactory connectionFactory)
         {
-            _configuration = configuration;
             _logger = logger;
-            _connectionString = _configuration.GetConnectionString("DefaultConnection");
+            _connectionFactory = connectionFactory;
         }
 
         public async Task<Usuario> CreateUsuarioAsync(Usuario entity)
@@ -25,7 +24,7 @@ namespace SGFE.Percistence.Repository.Usuarios
             {
                 _logger.LogInformation("Ejecucion del proceso almacenado sp_Usuario_Crear");
 
-                using (SqlConnection connection = new SqlConnection(_connectionString))
+                using (SqlConnection connection = await _connectionFactory.CreateConnectionAsync())
                 {
                     using (SqlCommand command = new SqlCommand("sp_Usuario_Crear", connection))
                     {
@@ -36,7 +35,7 @@ namespace SGFE.Percistence.Repository.Usuarios
                         command.Parameters.AddWithValue("@Email", entity.Email);
                         command.Parameters.AddWithValue("@PasswordHash", entity.PasswordHash);
 
-                        await connection.OpenAsync();
+                        
                         var rowsAffected = await command.ExecuteNonQueryAsync();
 
                         if (rowsAffected > 0)
@@ -71,14 +70,14 @@ namespace SGFE.Percistence.Repository.Usuarios
         {
             try 
             {
-                using (SqlConnection connection = new SqlConnection(_connectionString)) 
+                using (SqlConnection connection = await _connectionFactory.CreateConnectionAsync()) 
                 {
                     using (SqlCommand command = new SqlCommand("sp_Usuario_Desactivar", connection)) 
                     {
                         command.CommandType = System.Data.CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@Id", Id);
 
-                        await connection.OpenAsync();
+                        
 
                         var rowAffected = await command.ExecuteNonQueryAsync();
 
@@ -108,12 +107,12 @@ namespace SGFE.Percistence.Repository.Usuarios
         {
             try 
             {
-                using (SqlConnection connection = new SqlConnection(_connectionString)) 
+                using (SqlConnection connection = await _connectionFactory.CreateConnectionAsync()) 
                 {
                     using (SqlCommand command = new SqlCommand("sp_Usuarios_ObtenerTodos", connection)) 
                     {
                         command.CommandType = System.Data.CommandType.StoredProcedure;
-                        await connection.OpenAsync();
+                        
                         using (var reader = await command.ExecuteReaderAsync()) 
                         {
                             var usuarios = new List<Usuario>();
@@ -158,13 +157,13 @@ namespace SGFE.Percistence.Repository.Usuarios
         {
             try 
             {
-                using (SqlConnection connection = new SqlConnection(_connectionString))
+                using (SqlConnection connection = await _connectionFactory.CreateConnectionAsync())
                 {
                     using (SqlCommand command = new SqlCommand("sp_GetUserByEmail_Login", connection))
                     {
                         command.CommandType = System.Data.CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@Email", email);
-                        await connection.OpenAsync();
+
                         using (var reader = await command.ExecuteReaderAsync())
                         {
                             if (await reader.ReadAsync())
@@ -173,7 +172,8 @@ namespace SGFE.Percistence.Repository.Usuarios
                                 {
                                     Id = reader.GetInt32(reader.GetOrdinal("Id")),
                                     Email = reader.GetString(reader.GetOrdinal("Email")),
-                                    PasswordHash = reader.GetString(reader.GetOrdinal("PasswordHash"))
+                                    PasswordHash = reader.GetString(reader.GetOrdinal("PasswordHash")),
+                                    EmpresaId = reader.GetInt32(reader.GetOrdinal("EmpresaId"))
                                 };
                                 return usuario;
                             }
@@ -197,13 +197,13 @@ namespace SGFE.Percistence.Repository.Usuarios
         {
             try 
             {
-                using (SqlConnection connection = new SqlConnection(_connectionString))
+                using (SqlConnection connection = await _connectionFactory.CreateConnectionAsync())
                 {
                     using (SqlCommand command = new SqlCommand("sp_Usuario_ObtenerPorRolId_Login", connection))
                     {
                         command.CommandType = System.Data.CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@UserId", usuarioId);
-                        await connection.OpenAsync();
+                        
                         using (var reader = await command.ExecuteReaderAsync())
                         {
                             var roles = new List<string>();
@@ -235,14 +235,14 @@ namespace SGFE.Percistence.Repository.Usuarios
             try 
             {
                 _logger.LogInformation("Ejecucion del proceso almacenado sp_Usuario_ObtenerPorEmail");
-                using (SqlConnection connection = new SqlConnection(_connectionString))
+                using (SqlConnection connection = await _connectionFactory.CreateConnectionAsync())
                 {
                     using (SqlCommand command = new SqlCommand("sp_Usuario_ObtenerPorEmail", connection))
                     {
                         command.CommandType = System.Data.CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@Email", email);
 
-                        await connection.OpenAsync();
+                        
                         using (var reader = await command.ExecuteReaderAsync())
                         {
                             if (await reader.ReadAsync())
@@ -279,14 +279,14 @@ namespace SGFE.Percistence.Repository.Usuarios
             {
                 _logger.LogInformation("Ejecucion del proceso almacenado sp_Usuario_ObtenerPorId");
 
-                using (SqlConnection connection = new SqlConnection(_connectionString))
+                using (SqlConnection connection = await _connectionFactory.CreateConnectionAsync())
                 {
                     using (SqlCommand command = new SqlCommand("sp_Usuario_ObtenerPorId", connection))
                     {
                         command.CommandType = System.Data.CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@Id", id);
 
-                        await connection.OpenAsync();
+                        
                         using (var reader = await command.ExecuteReaderAsync())
                         {
                             if (await reader.ReadAsync())
@@ -323,7 +323,7 @@ namespace SGFE.Percistence.Repository.Usuarios
             {
                 _logger.LogInformation("Ejecucion del proceso almacenado sp_Usuario_Actualizar");
 
-                using (SqlConnection connection = new SqlConnection(_connectionString))
+                using (SqlConnection connection = await _connectionFactory.CreateConnectionAsync())
                 {
                     using (SqlCommand command = new SqlCommand("sp_Usuario_Actualizar", connection))
                     {
@@ -333,7 +333,6 @@ namespace SGFE.Percistence.Repository.Usuarios
                         command.Parameters.AddWithValue("@Email", entity.Email);
                         command.Parameters.AddWithValue("@PasswordHash", entity.PasswordHash);
 
-                        await connection.OpenAsync();
                         var rowsAffected = await command.ExecuteNonQueryAsync();
                         if (rowsAffected > 0)
                         {

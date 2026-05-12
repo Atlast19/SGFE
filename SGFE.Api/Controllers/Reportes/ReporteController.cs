@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SGFE.Application.Interfaces.Reportes;
 using SGFE.Application.Models.Repostes;
 
@@ -15,7 +16,7 @@ namespace SGFE.Api.Controllers.Reportes
             _service = service;
         }
 
-
+        [Authorize(Roles = "Administrador")]
         [HttpGet("GetFacturaRepostesAsync")]
         public async Task<IActionResult> GetFacturaRepostes([FromQuery] GetFacturaReposte filtroModel)
         {
@@ -31,6 +32,7 @@ namespace SGFE.Api.Controllers.Reportes
         }
 
 
+        [Authorize(Roles = "Administrador")]
         [HttpGet("GetResumenFacturaAsync")]
         public async Task<IActionResult> GetResumenFactura([FromQuery] GetResumenFactura filtroModel)
         {

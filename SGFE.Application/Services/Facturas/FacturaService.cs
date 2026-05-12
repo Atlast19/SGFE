@@ -1,25 +1,108 @@
-﻿using SGFE.Application.Interfaces.Facturas;
+﻿using SGFE.Application.Interfaces.CertificadosDigitales;
+using SGFE.Application.Interfaces.Facturas;
+using SGFE.Application.Models.Facturas;
 using SGFE.Domein.Entitys;
 using SGFE.Domein.Interfaces.Facturas;
+using System.Text;
 
 namespace SGFE.Application.Services.Facturas
 {
     public class FacturaService : IFacturaService
     {
         private readonly IFacturaRepository _repository;
+        private readonly ICertificadoDigitalService _certificadoRepository;
+        private readonly IFirmaXmlService _firmaService;
+        private readonly GenerateXMLFactory _xmlFactory;
 
-        public FacturaService(IFacturaRepository repository)
+        public FacturaService(IFacturaRepository repository,
+            ICertificadoDigitalService certificadoRepository, 
+            IFirmaXmlService firmaService,
+            GenerateXMLFactory xmlFactory)
         {
             _repository = repository;
-        }
-        public async Task CreateFacturaAsync(Factura factura, List<FacturaDetalle> detalles)
-        {
-            await _repository.CreateFacturaAsync(factura, detalles);
+            _certificadoRepository = certificadoRepository;
+            _firmaService = firmaService;
+            _xmlFactory = xmlFactory;
         }
 
-        public async Task<Factura> GetfacturaByIdAsync(int FacturaId)
+        public async Task<string> CreateFacturaAsync(CreateFacturaModel model)
         {
-            return await _repository.GetfacturaByIdAsync(FacturaId);
+            var factura = new Factura
+            {
+                EmpresaId = model.EmpresaId,
+                ClienteId = model.ClienteId,
+                TipoECFId = model.TipoECFId,
+                FechaEmision = DateTime.Now
+            };
+
+            var detalles = model.Detalles.Select(d => new FacturaDetalle
+            {
+                Descripcion = d.Descripcion,
+                Cantidad = d.Cantidad,
+                PrecioUnitario = d.PrecioUnitario,
+
+                Monto = d.Cantidad * d.PrecioUnitario,
+                Itbis = (d.Cantidad * d.PrecioUnitario) * 0.18m
+            }).ToList();
+
+            // Generar la factura en la base de datos
+            var (facturaId, ncf) = await _repository.CreateFacturaAsync(factura, detalles);
+
+            // Obtener la factura completa con los detalles para generar el XML
+            var facturaCompleta = await _repository.GetfacturaByIdAsync(facturaId);
+
+            // Obtiene el tipo de factura electronica
+            var generator = _xmlFactory.Generator(facturaCompleta.TiposECF);
+
+            // Generar el XML de la factura electronica espesifica
+            var xml = generator.GenerarXml(facturaCompleta);
+
+            // Obtener el certificado digital para firmar el XML
+            var cert = await _certificadoRepository.GetCertificadoDigitalByIdAsync(model.CertificadoId);
+
+            // Desencriptar la contraseña del certificado
+            var password = Encoding.UTF8.GetString(cert.PasswordEncriptada);
+
+            // Firmar el XML con el certificado digital
+            var xmlFirmado = _firmaService.FirmarXml(xml,cert.RutaArchivo, password);
+
+            // Actualizar el estado de la factura a "Firmada"
+            await _repository.UpdateFacturaEstado(facturaId, "Firmada");
+
+            // Guardar el XML firmado en la base de datos
+            await _repository.GuardarXmlAsync(facturaId, xmlFirmado);
+
+
+            return ncf;
+        }
+
+        public async Task<GetFacturaModel> GetfacturaByIdAsync(int FacturaId)
+        {
+            var factura = await _repository.GetfacturaByIdAsync(FacturaId);
+
+            var facturas = new GetFacturaModel
+            {
+                Id = factura.Id,
+                NCF = factura.NCF,
+                TiposECF = factura.TiposECF,
+                TipoECFId = factura.TipoECFId,
+                FechaEmision = factura.FechaEmision,
+                MontoTotal = factura.MontoTotal,
+                ItbisTotal = factura.ItbisTotal,
+                SubTotal = factura.SubTotal,
+                ClienteNombre = factura.ClienteNombre,
+                ClienteDocumento = factura.ClienteDocumento,
+                Detalles = factura.FacturaDetalles.Select(d => new GetFacturaDetalleModel
+                {
+                    Descripcion = d.Descripcion,
+                    Cantidad = d.Cantidad,
+                    PrecioUnitario = d.PrecioUnitario,
+                    Monto = d.Monto,
+                    Itbis = d.Itbis
+                }).ToList()
+            };
+
+            return facturas;
         }
 
         public async Task UpdateDGIIResponse(int facturaId, string trackId, string estado, string respuestaDGII, DateTime? fechaEnvio)
@@ -29,7 +112,7 @@ namespace SGFE.Application.Services.Facturas
 
         public async Task UpdateFacturaEstado(int facturaId, string estado)
         {
-            await _repository.UpdateFacturaEstado(facturaId, estado);
+            await _repository.GetfacturaByIdAsync(facturaId);
         }
     }
 }

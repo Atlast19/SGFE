@@ -7,7 +7,7 @@ namespace SGFE.Application.Models.CertificadosDigitales
         public string NombreArchivo { get; set; }
         public string RutaArchivo { get; set; }
         public byte[] ArchivoCertificado { get; set; }
-        public string PasswordEncriptada { get; set; }
+        public byte[] PasswordEncriptada { get; set; }
         public DateTime? FechaVencimiento { get; set; }
     }
 }

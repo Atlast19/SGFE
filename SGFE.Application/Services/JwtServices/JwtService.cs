@@ -27,7 +27,8 @@ namespace SGFE.Application.Services.AuthService
             var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Email, user.Email)
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim("EmpresaId", user.EmpresaId.ToString())
         };
 
             // roles como claims

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SGFE.Application.Interfaces.SecuenciasNCF;
 using SGFE.Application.Models.SecuenciaNCF;
 
@@ -15,6 +16,7 @@ namespace SGFE.Api.Controllers.SecuenciasNCF
             _service = service;
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpPost("registrar")]
         public async Task<IActionResult> Registrar([FromBody] RegistrarSecuenciaNCFModel request)
         {
@@ -30,22 +32,6 @@ namespace SGFE.Api.Controllers.SecuenciasNCF
             }
         }
 
-        [HttpGet("next")]
-        public async Task<IActionResult> GetNextSecuenciaNCF([FromQuery] CreateSecuenciaNCFModel request)
-        {
-            try
-            {
-                var result = await _service.GetNextSecuenciaNCFAsync(request);
 
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new
-                {
-                    message = $"Error al obtener la siguiente secuencia NCF: {ex.Message}"
-                });
-            }
-        }
     }
 }

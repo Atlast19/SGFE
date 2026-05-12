@@ -22,6 +22,7 @@ namespace SGFE.Application.Services.AuthServices
         public async Task<string> Login(string email, string password)
         {
             var user = await _repo.GetEmailForLogin(email);
+            
 
             if (user == null)
                 throw new Exception("Usuario no existe");
@@ -33,6 +34,7 @@ namespace SGFE.Application.Services.AuthServices
 
             //  obtener roles
             var roles = await _repo.GetRolesByUsuarioIdAsync(user.Id);
+            
 
             // generar token con roles
             return _jwt.GenerateToken(user, roles);

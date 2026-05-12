@@ -21,7 +21,7 @@ public partial class FacturaDetalle
 
     public decimal Itbis { get; set; }
 
-    public decimal? Descuento { get; set; }
+    public decimal Descuento { get; set; }
 
     public DateTime? FechaCreacion { get; set; }
 

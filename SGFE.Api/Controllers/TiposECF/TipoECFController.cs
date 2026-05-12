@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SGFE.Application.Interfaces.TiposECF;
 using SGFE.Application.Models.TiposECF;
 
@@ -15,8 +16,10 @@ namespace SGFE.Api.Controllers.TiposECF
             _service = service;
         }
 
+
+        [Authorize(Roles = "Administrador")]
         [HttpPost("CreateTipo(e-CF)Async")]
-        public async Task<IActionResult> CreateTipoECFAsync([FromBody] CreateTipoECF model)
+        public async Task<IActionResult> CreateTipoECFAsync([FromBody] CreateTipoECFModel model)
         {
             var result = await _service.CrearTiposECFAsync(model);
             if (result == null)
@@ -29,6 +32,7 @@ namespace SGFE.Api.Controllers.TiposECF
             return Ok(result);
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpGet("GetAllTiposECFAsync")]
         public async Task<IActionResult> GetAllTiposECFAsync()
         {
@@ -43,6 +47,7 @@ namespace SGFE.Api.Controllers.TiposECF
             return Ok(result);
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpGet("GetTipoECFByIdAsync/{id}")]
         public async Task<IActionResult> GetTipoECFByIdAsync(int id) 
         {
@@ -57,6 +62,7 @@ namespace SGFE.Api.Controllers.TiposECF
             return Ok(result);
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpDelete("DeleteTipoECFAsync/{id}")]
         public async Task<IActionResult> DeleteTipoECFAsync(int id)
         {
@@ -71,8 +77,9 @@ namespace SGFE.Api.Controllers.TiposECF
             return Ok(result);
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpPut("UpdateTipoECFAsync")]
-        public async Task<IActionResult> UpdateTipoECFAsync([FromBody] UpdateTipoECF model)
+        public async Task<IActionResult> UpdateTipoECFAsync([FromBody] UpdateTipoECFModel model)
         {
             var result = await _service.UpdateTipoECFAsync(model);
             if (result == null)

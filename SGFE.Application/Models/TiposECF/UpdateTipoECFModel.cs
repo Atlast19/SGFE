@@ -1,7 +1,7 @@
 ﻿
 namespace SGFE.Application.Models.TiposECF
 {
-    public class GetTipoECF
+    public class UpdateTipoECFModel
     {
         public int Id { get; set; }
         public string Codigo { get; set; }

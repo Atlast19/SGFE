@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SGFE.Application.Interfaces.CertificadosDigitales;
 using SGFE.Application.Models.CertificadosDigitales;
+using System.Text;
 
 namespace SGFE.Api.Controllers.CertificadosDigitales
 {
@@ -15,6 +17,8 @@ namespace SGFE.Api.Controllers.CertificadosDigitales
             _service = service;
         }
 
+
+        [Authorize(Roles = "Administrador")]
         [HttpPost("uploadCertificadoDigitalAsync")]
         public async Task<IActionResult> Upload(IFormFile archivo, [FromForm] string password,[FromForm] DateTime fechaVencimiento)
         {
@@ -45,12 +49,14 @@ namespace SGFE.Api.Controllers.CertificadosDigitales
                 archivoBytes = ms.ToArray();
             }
 
+            var passwordBytes = Encoding.UTF8.GetBytes(password);
+
             var dto = new CreateCertificadoDigitalModel
             {
                 NombreArchivo = archivo.FileName,
                 RutaArchivo = rutaCompleta,
                 ArchivoCertificado = archivoBytes,
-                PasswordEncriptada = password,
+                PasswordEncriptada = passwordBytes,
                 FechaVencimiento = fechaVencimiento
             };
 

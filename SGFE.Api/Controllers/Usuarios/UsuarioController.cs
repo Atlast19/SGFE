@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SGFE.Application.Interfaces.Usuarios;
 using SGFE.Application.Models.Usuarios;
 using SGFE.Application.Services.AuthServices;
+using System.Runtime.InteropServices;
 
 namespace SGFE.Api.Controllers.Usuarios
 {
@@ -18,6 +20,7 @@ namespace SGFE.Api.Controllers.Usuarios
             _auth = auth;
         }
 
+        [AllowAnonymous]
         [HttpPost("CreateUsuarioAsync")]
         public async Task<IActionResult> CreateUsuarioAsync([FromBody] CreateUsuarioModel model)
         {
@@ -34,6 +37,8 @@ namespace SGFE.Api.Controllers.Usuarios
             return Ok(result);
         }
 
+
+        [Authorize]
         [HttpGet("GetAllUsuarioAsync")]
         public async Task<IActionResult> GetAllUsuarioAsync()
         {
@@ -50,6 +55,7 @@ namespace SGFE.Api.Controllers.Usuarios
             return Ok(result);
         }
 
+        [Authorize]
         [HttpGet("GetUsuarioByIdAsync/{id}")]
         public async Task<IActionResult> GetUsuarioByIdAsync(int id)
         {
@@ -66,6 +72,7 @@ namespace SGFE.Api.Controllers.Usuarios
             return Ok(usuario);
         }
 
+        [Authorize]
         [HttpGet("GetUsuarioByEmailAsync/{email}")]
         public async Task<IActionResult> GetUsuarioByEmailAsync(string email)
         {
@@ -80,6 +87,7 @@ namespace SGFE.Api.Controllers.Usuarios
             return Ok(usuario);
         }
 
+        [Authorize]
         [HttpDelete("DeleteUsuarioAsync/{Id}")]
         public async Task<IActionResult> DeleteUsuarioAsync(int Id) 
         {
@@ -94,7 +102,8 @@ namespace SGFE.Api.Controllers.Usuarios
             }
             return Ok(result);
         }
-
+        
+        [Authorize]
         [HttpPut("UpdateUsuarioAsync")]
         public async Task<IActionResult> UpdateUsuarioAsync([FromBody] UpdateUsuarioModel model)
         {
@@ -111,6 +120,7 @@ namespace SGFE.Api.Controllers.Usuarios
             return Ok(result);
         }
 
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestModel request)
         {
