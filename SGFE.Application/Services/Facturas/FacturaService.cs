@@ -61,7 +61,7 @@ namespace SGFE.Application.Services.Facturas
             var cert = await _certificadoRepository.GetCertificadoDigitalByIdAsync(model.CertificadoId);
 
             // Desencriptar la contraseña del certificado
-            var password = Encoding.UTF8.GetString(cert.PasswordEncriptada);
+            var password = DesencriptarPassword(cert.PasswordEncriptada);
 
             // Firmar el XML con el certificado digital
             var xmlFirmado = _firmaService.FirmarXml(xml,cert.RutaArchivo, password);
@@ -114,5 +114,26 @@ namespace SGFE.Application.Services.Facturas
         {
             await _repository.GetfacturaByIdAsync(facturaId);
         }
+
+        private string DesencriptarPassword(byte[] passwordEncriptada)
+        {
+            using (var aes = System.Security.Cryptography.Aes.Create())
+            {
+                aes.Key = Encoding.UTF8.GetBytes("12345678901234567890123456789012");
+                aes.IV = Encoding.UTF8.GetBytes("1234567890123456");
+
+                using (var decryptor = aes.CreateDecryptor(aes.Key, aes.IV))
+                {
+                    byte[] passwordDesencriptada = decryptor.TransformFinalBlock(
+                        passwordEncriptada,
+                        0,
+                        passwordEncriptada.Length
+                    );
+
+                    return Encoding.UTF8.GetString(passwordDesencriptada);
+                }
+            }
+        }
     }
+
 }

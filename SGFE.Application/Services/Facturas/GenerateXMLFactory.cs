@@ -12,7 +12,6 @@ namespace SGFE.Application.Services.Facturas
             {
                 "31" => new Ecf31XmlGenerator(),
                 "32" => new Ecf32XmlGenerator(),
-                "33" => new Ecf33XmlGenerator(),
                 _ => throw new Exception("Tipo e-CF no soportado")
             };
         }

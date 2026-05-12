@@ -42,7 +42,7 @@ namespace SGFE.Application.Services.Facturas.XMLs
 
                         // RECEPTOR
                         new XElement(ns + "Receptor",
-                            new XElement(ns + "RNCReceptor", factura.ClienteDocumento), // no esta trayendo estos datos y tanpoco los del itebis
+                            new XElement(ns + "RNCReceptor", factura.ClienteDocumento),
                             new XElement(ns + "RazonSocialReceptor", factura.ClienteNombre)
                         )
                     ),
