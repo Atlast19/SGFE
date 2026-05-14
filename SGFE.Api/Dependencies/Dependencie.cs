@@ -98,7 +98,6 @@ namespace SGFE.Api.Dependencies
             service.AddScoped<GenerateXMLFactory>();
             service.AddScoped<IGenerateXMLService, Ecf31XmlGenerator>();
             service.AddScoped<IGenerateXMLService, Ecf32XmlGenerator>();
-            service.AddScoped<IGenerateXMLService, Ecf33XmlGenerator>();
             service.AddScoped<IFirmaXmlService, FirmarXmlService>();
 
             #endregion

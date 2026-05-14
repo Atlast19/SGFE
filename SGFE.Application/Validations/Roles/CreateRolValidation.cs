@@ -7,8 +7,6 @@ namespace SGFE.Application.Validations.Roles
     {
         public CreateRolValidation()
         {
-            RuleFor(x => x.Id)
-                .GreaterThan(0).WithMessage("El identificador es obligatorio.");
 
             RuleFor(x => x.Nombre)
                 .NotEmpty().WithMessage("El nombre es obligatorio.")
