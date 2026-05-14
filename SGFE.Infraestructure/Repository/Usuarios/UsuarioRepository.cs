@@ -77,22 +77,22 @@ namespace SGFE.Percistence.Repository.Usuarios
                         command.CommandType = System.Data.CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@Id", Id);
 
-                        
+                        var result = await command.ExecuteScalarAsync();
 
-                        var rowAffected = await command.ExecuteNonQueryAsync();
-
-                        if (rowAffected > 0)
+                        if (Convert.ToInt32(result) == 1)
                         {
+                            _logger.LogInformation("Usuario desactivado exitosamente");
+
                             return new Usuario
                             {
                                 Id = Id
-                            };
+                            };  
                         }
-                        else 
-                        {
-                            _logger.LogWarning($"No se pudieron eliminar los datos del ID: {Id}");
-                            return null;
-                        }
+
+                        _logger.LogWarning(
+                            "No se pudo desactivar el usuario con ID: {RoleId}", Id);
+
+                        return null;
                     }
                 }
             }
@@ -333,17 +333,18 @@ namespace SGFE.Percistence.Repository.Usuarios
                         command.Parameters.AddWithValue("@Email", entity.Email);
                         command.Parameters.AddWithValue("@PasswordHash", entity.PasswordHash);
 
-                        var rowsAffected = await command.ExecuteNonQueryAsync();
-                        if (rowsAffected > 0)
+                        var result = await command.ExecuteScalarAsync();
+
+                        if (Convert.ToInt32(result) == 1)
                         {
                             _logger.LogInformation("Usuario actualizado exitosamente");
-                            return entity;  
+
+                            return entity;
                         }
-                        else
-                        {
-                            _logger.LogWarning("No se pudo actualizar el usuario");
-                            return null;
-                        }
+
+                        _logger.LogWarning(
+                            "No se pudo actualizar el usuario con ID: {UserId}", entity.Id);
+                        return null;
                     }
                 }
             }

@@ -72,23 +72,28 @@ namespace SGFE.Percistence.Repository.TiposECF
                         command.CommandType = System.Data.CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@Id", id);
 
-                        var rowAffected = await command.ExecuteNonQueryAsync();
-                        if (rowAffected > 0) 
+                        var result = await command.ExecuteScalarAsync();
+
+                        if (Convert.ToInt32(result) == 1)
                         {
-                            _logger.LogInformation($"TipoECF con Id {id} eliminado exitosamente");
-                            return new TipoECF { Id = id };
+                            _logger.LogInformation("Tipo(e-CF) desactivado exitosamente");
+
+                            return new TipoECF
+                            {
+                                Id = id
+                            };
                         }
-                        else 
-                        {
-                            _logger.LogWarning($"No se pudo eliminar el TipoECF con Id {id}");
-                            return null;
-                        }
+
+                        _logger.LogWarning(
+                            "No se pudo desactivar el Tipo(e-CF) con ID: {Id}",id);
+
+                        return null;
                     }
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error al eliminar el TipoECF con Id {id}");
+                _logger.LogError(ex, $"Error al eliminar el Tipo(e-CF) con Id {id}");
                 throw;
             }
         }
@@ -197,19 +202,20 @@ namespace SGFE.Percistence.Repository.TiposECF
                         command.Parameters.AddWithValue("@Codigo", entity.Codigo);
                         command.Parameters.AddWithValue("@Descripcion", entity.Descripcion);
 
-                        
-                        var rowAffected = await command.ExecuteNonQueryAsync();
 
-                        if (rowAffected > 0) 
+                        var result = await command.ExecuteScalarAsync();
+
+                        if (Convert.ToInt32(result) == 1)
                         {
-                            _logger.LogInformation($"TipoECF con Id {entity.Id} actualizado exitosamente");
+                            _logger.LogInformation("Tipo(e-CF) actualizado exitosamente");
+
                             return entity;
                         }
-                        else 
-                        {
-                            _logger.LogWarning($"No se pudo actualizar el TipoECF con Id {entity.Id}");
-                            return null;
-                        }
+
+                        _logger.LogWarning(
+                            "No se pudo actualizar el Tipo(e-CF) con ID: {Id}",entity.Id);
+
+                        return null;
                     }
                 }
             }

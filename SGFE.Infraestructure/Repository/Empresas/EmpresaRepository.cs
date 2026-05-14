@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using SGFE.Application.Interfaces.SessionContext;
 using SGFE.Domein.Entitys;
 using SGFE.Domein.Interfaces.Empresas;
 
@@ -8,15 +9,15 @@ namespace SGFE.Percistence.Repository.Empresas
 {
     public class EmpresaRepository : IEmpresaRepository
     {
-        private readonly IConfiguration _configuration;
+        private readonly ISqlConnectionFactory _sqlConnectionFactory;
         private readonly ILogger<EmpresaRepository> _logger;
-        private readonly string _connectionString;
 
-        public EmpresaRepository(IConfiguration configuration, ILogger<EmpresaRepository> logger)
+
+        public EmpresaRepository(ISqlConnectionFactory sqlConnectionFactory, ILogger<EmpresaRepository> logger)
         {
-            _configuration = configuration;
+            _sqlConnectionFactory = sqlConnectionFactory;
             _logger = logger;
-            _connectionString = _configuration.GetConnectionString("DefaultConnection");
+
         }
 
         public async Task<Empresa> CreateEmpresaAsync(Empresa entity)
@@ -25,7 +26,7 @@ namespace SGFE.Percistence.Repository.Empresas
             {
                 _logger.LogInformation("Ejecucion del proceso almacenado sp_Empresa_Crear");
 
-                using (SqlConnection connection = new SqlConnection(_connectionString)) 
+                using (SqlConnection connection = await _sqlConnectionFactory.CreateConnectionAsync()) 
                 {
                     using (SqlCommand command = new SqlCommand("sp_Empresa_Crear", connection)) 
                     {
@@ -38,7 +39,7 @@ namespace SGFE.Percistence.Repository.Empresas
                         command.Parameters.AddWithValue("@Telefono", entity.Telefono);
                         command.Parameters.AddWithValue("@Email", entity.Email);
 
-                        await connection.OpenAsync();
+                        
                         var rowsAffected = await command.ExecuteNonQueryAsync();
 
                         if (rowsAffected > 0)
@@ -77,31 +78,31 @@ namespace SGFE.Percistence.Repository.Empresas
         {
             try
             {
-                using (SqlConnection connection = new SqlConnection(_connectionString)) 
+                using (SqlConnection connection = await _sqlConnectionFactory.CreateConnectionAsync()) 
                 {
                     using (SqlCommand command = new SqlCommand("sp_Empresa_Eliminar", connection)) 
                     {
                         command.CommandType = System.Data.CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@Id", empresaId);
 
-                        await connection.OpenAsync();
+                      
 
-                        var rowaffected = await command.ExecuteNonQueryAsync();
+                        var result = await command.ExecuteScalarAsync();
 
-                        if (rowaffected > 0)
+                        if (Convert.ToInt32(result) == 1)
                         {
-                            _logger.LogInformation("Empresa desactivada correctamente");
+                            _logger.LogInformation("Empresa desactivda exitosamente");
 
                             return new Empresa
                             {
                                 Id = empresaId
                             };
                         }
-                        else 
-                        {
-                            _logger.LogWarning("No se pudo desactivar la empresa");
-                            return null;
-                        }
+
+                        _logger.LogWarning(
+                            "No se pudo desactivar la empresa con ID: {empresaId}", empresaId);
+
+                        return null;
                     }
                 }
             }
@@ -117,12 +118,12 @@ namespace SGFE.Percistence.Repository.Empresas
             try 
             {
                 _logger.LogInformation("Ejecucion del proceso almacenado sp_Empresa_ObtenerTodos");
-                using (SqlConnection connection = new SqlConnection(_connectionString)) 
+                using (SqlConnection connection = await _sqlConnectionFactory.CreateConnectionAsync()) 
                 {
                     using (SqlCommand command = new SqlCommand("sp_Empresa_ObtenerTodos", connection)) 
                     {
                         command.CommandType = System.Data.CommandType.StoredProcedure;
-                        await connection.OpenAsync();
+
 
                         using (SqlDataReader reader = await command.ExecuteReaderAsync()) 
                         {
@@ -168,14 +169,13 @@ namespace SGFE.Percistence.Repository.Empresas
             {
                 _logger.LogInformation("Ejecucion del proceso almacenado sp_Empresa_ObtenerPorId con ID: {EmpresaId}", empresaId);
 
-                using (SqlConnection connection = new SqlConnection(_connectionString)) 
+                using (SqlConnection connection = await _sqlConnectionFactory.CreateConnectionAsync()) 
                 {
                     using (SqlCommand command = new SqlCommand("sp_Empresa_ObtenerPorId", connection)) 
                     {
                         command.CommandType = System.Data.CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@Id", empresaId);
 
-                        await connection.OpenAsync();
                         using (SqlDataReader reader = await command.ExecuteReaderAsync()) 
                         {
                             if (await reader.ReadAsync()) 
@@ -214,10 +214,10 @@ namespace SGFE.Percistence.Repository.Empresas
             try
             {
                 _logger.LogInformation("Ejecucion del proceso almacenado sp_Empresa_Actualizar con ID: {EmpresaId}", entity.Id);
-                
-                using (SqlConnection connection = new SqlConnection(_connectionString)) 
+
+                using (SqlConnection connection = await _sqlConnectionFactory.CreateConnectionAsync())
                 {
-                    using (SqlCommand command = new SqlCommand("sp_Empresa_Actualizar", connection)) 
+                    using (SqlCommand command = new SqlCommand("sp_Empresa_Actualizar", connection))
                     {
                         command.CommandType = System.Data.CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@Id", entity.Id);
@@ -227,20 +227,21 @@ namespace SGFE.Percistence.Repository.Empresas
                         command.Parameters.AddWithValue("@Direccion", entity.Direccion);
                         command.Parameters.AddWithValue("@Telefono", entity.Telefono);
                         command.Parameters.AddWithValue("@Email", entity.Email);
-                        
-                        await connection.OpenAsync();
-                        var rowsAffected = await command.ExecuteNonQueryAsync();
-                        
-                        if (rowsAffected > 0)
+
+
+                        var result = await command.ExecuteScalarAsync();
+
+                        if (Convert.ToInt32(result) == 1)
                         {
-                            _logger.LogInformation("Empresa con ID: {EmpresaId} actualizada exitosamente", entity.Id);
+                            _logger.LogInformation("Empresa actualizada exitosamente");
+
                             return entity;
                         }
-                        else
-                        {
-                            _logger.LogWarning("No se pudo actualizar la empresa con ID: {EmpresaId}", entity.Id);
-                            return null;
-                        }
+
+                        _logger.LogWarning(
+                            "No se pudo actualizar la empresa con ID: {Id}", entity.Id);
+
+                        return null;
                     }
                 }
             }

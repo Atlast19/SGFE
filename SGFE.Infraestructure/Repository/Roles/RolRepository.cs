@@ -70,9 +70,9 @@ namespace SGFE.Percistence.Repository.Roles
                         command.CommandType = System.Data.CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@Id", RoleId);
 
-                        var rowsAffected = await command.ExecuteNonQueryAsync();
+                        var result = await command.ExecuteScalarAsync();
 
-                        if (rowsAffected > 0)
+                        if (Convert.ToInt32(result) == 1)
                         {
                             _logger.LogInformation("Rol desactivado exitosamente");
 
@@ -82,11 +82,11 @@ namespace SGFE.Percistence.Repository.Roles
                             };
                             return rol;
                         }
-                        else
-                        {
-                            _logger.LogWarning("No se encontró el rol con ID: {RoleId}", RoleId);
-                            return null;
-                        }
+
+                        _logger.LogWarning(
+                            "No se pudo desactivar el rol con ID: {RoleId}",RoleId);
+
+                        return null;
                     }
                 }
             }
@@ -200,18 +200,20 @@ namespace SGFE.Percistence.Repository.Roles
                         command.Parameters.AddWithValue("@Nombre", entity.Nombre);
                         command.Parameters.AddWithValue("@Descripcion", entity.Descripcion);
 
-                        var rowsAffected = await command.ExecuteNonQueryAsync();
+                        var result = await command.ExecuteScalarAsync();
 
-                        if (rowsAffected > 0) 
+                        if (Convert.ToInt32(result) == 1)
                         {
                             _logger.LogInformation("Rol actualizado exitosamente");
+
                             return entity;
                         }
-                        else 
-                        {
-                            _logger.LogWarning("No se pudo actualizar el rol con ID: {RoleId}", entity.Id);
-                            return null;
-                        }
+
+                        _logger.LogWarning(
+                            "No se pudo actualizar el rol con ID: {RoleId}",
+                            entity.Id);
+
+                        return null;
                     }
                 }
             }

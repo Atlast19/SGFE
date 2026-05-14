@@ -1,22 +1,24 @@
 ﻿using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
+
 using Microsoft.Extensions.Logging;
+using SGFE.Application.Interfaces.SessionContext;
 using SGFE.Domein.Entitys;
 using SGFE.Domein.Interfaces.Clientes;
+
 
 namespace SGFE.Percistence.Repository.Clientes
 {
     public class ClienteRepository : IClienteRepository
     {
-        private readonly IConfiguration _configuration;
+        private readonly ISqlConnectionFactory _sqlConnectionFactory;
         private readonly ILogger<ClienteRepository> _logger;
-        private readonly string _connectionString;
 
-        public ClienteRepository(IConfiguration configuration, ILogger<ClienteRepository> logger)
+
+        public ClienteRepository(ISqlConnectionFactory sqlConnectionFactory, ILogger<ClienteRepository> logger)
         {
-            _configuration = configuration;
+            _sqlConnectionFactory = sqlConnectionFactory;
             _logger = logger;
-            _connectionString = _configuration.GetConnectionString("DefaultConnection");
+
         }
 
         public async Task<Cliente> CreateClienteAsync(Cliente entity)
@@ -25,7 +27,7 @@ namespace SGFE.Percistence.Repository.Clientes
             {
                 _logger.LogInformation("Ejecucion del proceso almacenado sp_Cliente_Crear");
 
-                using (SqlConnection connection = new SqlConnection(_connectionString))
+                using (SqlConnection connection = await _sqlConnectionFactory.CreateConnectionAsync())
                 {
                     using (SqlCommand cmd = new SqlCommand("sp_Cliente_Crear", connection)) 
                     {
@@ -81,31 +83,29 @@ namespace SGFE.Percistence.Repository.Clientes
             try 
             {
                 _logger.LogInformation("Ejecucion del procedimiento almacenado sp_Cliente_Eliminar con Id: {ClienteId}", Id);
-                using (SqlConnection connection = new SqlConnection(_connectionString)) 
+                using (SqlConnection connection = await _sqlConnectionFactory.CreateConnectionAsync()) 
                 {
                     using (SqlCommand cmd = new SqlCommand("sp_Cliente_EliminarLogico", connection)) 
                     {
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@Id", Id);
 
-                        await connection.OpenAsync();
-                        var rowsAffected = await cmd.ExecuteNonQueryAsync();
-                        if (rowsAffected > 0)
-                        {
-                            _logger.LogInformation("Cliente eliminado exitosamente con Id: {ClienteId}", Id);
+                        var result = await cmd.ExecuteScalarAsync();
 
-                            var clientes = new Cliente
+                        if (Convert.ToInt32(result) == 1)
+                        {
+                            _logger.LogInformation("Cliente desactivado exitosamente");
+
+                            return new Cliente
                             {
                                 Id = Id
                             };
+                        }
 
-                            return clientes;
-                        }
-                        else
-                        {
-                            _logger.LogWarning("No se pudo eliminar el cliente con Id: {ClienteId}", Id);
-                            return null;
-                        }
+                        _logger.LogWarning(
+                            "No se pudo desactivar el cliente con ID: {Id}",Id);
+
+                        return null;
                     }
                 }
             }
@@ -122,12 +122,11 @@ namespace SGFE.Percistence.Repository.Clientes
             {
                 _logger.LogInformation("Ejecucion del procedimiento almacenado sp_Cliente_Crear");
 
-                using (SqlConnection conection = new SqlConnection(_connectionString)) 
+                using (SqlConnection conection = await _sqlConnectionFactory.CreateConnectionAsync()) 
                 {
                     using (SqlCommand cmd = new SqlCommand("sp_Clientes_ObtenerTodos", conection))
                     {
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
-                        await conection.OpenAsync();
 
                         using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                         {
@@ -173,13 +172,14 @@ namespace SGFE.Percistence.Repository.Clientes
             try 
             {
                 _logger.LogInformation("Ejecucion del proceso almacenado sp_Cliente_ObtenerPorEmpresaId con EmpresaId: {EmpresaId}", EmpresaId);
-                using (SqlConnection connection = new SqlConnection(_connectionString)) 
+                using (SqlConnection connection = await _sqlConnectionFactory.CreateConnectionAsync()) 
                 {
                     using (SqlCommand cmd = new SqlCommand("sp_Cliente_ObtenerPorEmpresa", connection)) 
                     {
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@EmpresaId", EmpresaId);
-                        await connection.OpenAsync();
+
+
                         using (SqlDataReader reader = await cmd.ExecuteReaderAsync()) 
                         {
                             if (reader.HasRows) 
@@ -222,14 +222,14 @@ namespace SGFE.Percistence.Repository.Clientes
             {
                 _logger.LogInformation("Ejecucion del procedimiento almacenado sp_Cliente_ObtenerPorId");
 
-                using (SqlConnection connection = new SqlConnection(_connectionString))
+                using (SqlConnection connection = await _sqlConnectionFactory.CreateConnectionAsync())
                 {
                     using (SqlCommand cmd = new SqlCommand("sp_Cliente_ObtenerPorId", connection))
                     {
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@Id", ClienteId);
 
-                        await connection.OpenAsync();
+
 
                         using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                         {
@@ -274,7 +274,7 @@ namespace SGFE.Percistence.Repository.Clientes
             {
                 _logger.LogInformation("Ejecucion del procedimiento almacenado sp_Cliente_Actualizar con Id: {ClienteId}", entity.Id);
 
-                using (SqlConnection connection = new SqlConnection(_connectionString)) 
+                using (SqlConnection connection = await _sqlConnectionFactory.CreateConnectionAsync()) 
                 {
                     using (SqlCommand cmd = new SqlCommand("sp_Cliente_Actualizar", connection))
                     {
@@ -288,32 +288,22 @@ namespace SGFE.Percistence.Repository.Clientes
                         cmd.Parameters.AddWithValue("@Telefono", entity.Telefono);
                         cmd.Parameters.AddWithValue("@Email", entity.Email);
 
-                        await connection.OpenAsync();
 
-                        var rowsAffected = await cmd.ExecuteNonQueryAsync();
+                        var result = await cmd.ExecuteScalarAsync();
 
-                        if (rowsAffected > 0)
+                        if (Convert.ToInt32(result) == 1)
                         {
-                            var clientes = new Cliente
-                            {
-                                Id = entity.Id,
-                                EmpresaId = entity.EmpresaId,
-                                TipoDocumento = entity.TipoDocumento,
-                                Documento = entity.Documento,
-                                Nombre = entity.Nombre,
-                                NombreComercial = entity.NombreComercial,
-                                Direccion = entity.Direccion,
-                                Telefono = entity.Telefono,
-                                Email = entity.Email
-                            };
+                            _logger.LogInformation("Cliente actualizado exitosamente");
 
-                            return clientes;
+                            return entity;
                         }
-                        else {                             
-                            _logger.LogWarning("No se pudo actualizar el cliente con Id: {ClienteId}", entity.Id);
-                            return null;
-                        }
+
+                        _logger.LogWarning(
+                            "No se pudo actualizar el cliente con ID: {Id}", entity.Id);
+
+                        return null;
                     }
+                    
                 }
             }
             catch (Exception ex)

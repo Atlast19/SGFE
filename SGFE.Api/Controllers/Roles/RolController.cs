@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using SGFE.Application.Interfaces.Roles;
 using SGFE.Application.Models.Roles;
+using SGFE.Application.Services.Roles;
 
 namespace SGFE.Api.Controllers.Roles
 {
@@ -76,15 +78,13 @@ namespace SGFE.Api.Controllers.Roles
         public async Task<IActionResult> DeleteRoleAsync(int roleId)
         {
             var result = await _servicer.DeleteRolAsync(roleId);
-
             if (result == null)
             {
                 return NotFound(new
                 {
-                    message = "No se encontró el rol con ID: {RoleId} ", roleId
+                    message = $"No se encontró el rol con ID: {roleId}" 
                 });
             }
-
             return Ok(result);
         }
 
@@ -94,16 +94,16 @@ namespace SGFE.Api.Controllers.Roles
         public async Task<IActionResult> UpdateRoleAsync([FromBody] UpdateRolModel model) 
         {
             var result = await _servicer.UpdateRolAsync(model);
-
+            
             if (result == null)
             {
                 return NotFound(new
                 {
-                    message = $"No se pudo actualizar el rol con ID: {model.Id}"
+                    message = $"No se pudo actualizar el rol"
                 });
             }
-
             return Ok(result);
+            
         }
     }
 }
