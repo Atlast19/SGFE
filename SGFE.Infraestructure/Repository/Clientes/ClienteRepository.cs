@@ -41,15 +41,17 @@ namespace SGFE.Percistence.Repository.Clientes
                         cmd.Parameters.AddWithValue("@Telefono", entity.Telefono);
                         cmd.Parameters.AddWithValue("@Email", entity.Email);
 
-                         await connection.OpenAsync();
 
-                        var rowsAffected = cmd.ExecuteNonQuery();
+                        var result = await cmd.ExecuteScalarAsync();
 
-                        if (rowsAffected > 0) { 
+                        if (result != null && Convert.ToInt32(result) == 1)
+                        {
+                            _logger.LogInformation(
+                                "Cliente creado exitosamente con Documento: {Documento}",
+                                entity.Documento
+                            );
 
-                            _logger.LogInformation("Cliente creado exitosamente con Documento: {Documento}", entity.Documento);
-
-                            var clientes = new Cliente 
+                            var cliente = new Cliente
                             {
                                 EmpresaId = entity.EmpresaId,
                                 TipoDocumento = entity.TipoDocumento,
@@ -61,11 +63,15 @@ namespace SGFE.Percistence.Repository.Clientes
                                 Email = entity.Email
                             };
 
-                            return clientes;
-
+                            return cliente;
                         }
-                        else{
-                            _logger.LogWarning("No se pudo crear el cliente con Documento: {Documento}", entity.Documento);
+                        else
+                        {
+                            _logger.LogWarning(
+                                "No se pudo crear el cliente con Documento: {Documento}",
+                                entity.Documento
+                            );
+
                             return null;
                         }
                     }

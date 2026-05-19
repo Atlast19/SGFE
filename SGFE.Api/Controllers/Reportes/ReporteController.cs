@@ -18,7 +18,7 @@ namespace SGFE.Api.Controllers.Reportes
 
         [Authorize(Roles = "Administrador")]
         [HttpGet("GetFacturaRepostesAsync")]
-        public async Task<IActionResult> GetFacturaRepostes([FromQuery] GetFacturaReposte filtroModel)
+        public async Task<IActionResult> GetFacturaRepostes([FromQuery] GetFacturaReporteFiltroModel filtroModel)
         {
             var result = await _service.GetFacturaRepostesAsync(filtroModel);
             if (result == null)
@@ -31,20 +31,5 @@ namespace SGFE.Api.Controllers.Reportes
             return Ok(result);
         }
 
-
-        [Authorize(Roles = "Administrador")]
-        [HttpGet("GetResumenFacturaAsync")]
-        public async Task<IActionResult> GetResumenFactura([FromQuery] GetResumenFactura filtroModel)
-        {
-            var result = await _service.GetResumenFacturasAsync(filtroModel);
-            if (result == null)
-            {
-                return NotFound(new
-                {
-                    message = "No se encontraron reportes de ventas por cliente con los filtros proporcionados"
-                });
-            }
-            return Ok(result);
-        }
     }
 }

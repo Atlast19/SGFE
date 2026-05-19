@@ -79,7 +79,7 @@ namespace SGFE.Api.Dependencies
 
             #region Reportes
             service.AddScoped<IReporteService, ReporteService>();
-            service.AddScoped<IReporteRepository, ReposteRepository>();
+            service.AddScoped<IReporteRepository, ReporteRepository>();
             #endregion
 
             #region Certificado Digital

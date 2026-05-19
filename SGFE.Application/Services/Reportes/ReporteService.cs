@@ -14,48 +14,49 @@ namespace SGFE.Application.Services.Reportes
             _repository = repository;
         }
 
-        public async Task<List<GetFacturaReposte>> GetFacturaRepostesAsync(GetFacturaReposte filtroModel)
+        public async Task<List<GetFacturaReposte>> GetFacturaRepostesAsync(GetFacturaReporteFiltroModel filtroModel)
         {
-            var filtro = new FacturaRepostes
+                var filtroEntity = new FacturaReportes
+                {
+                    EmpresaId = filtroModel.EmpresaId,
+                    FechaEmision = filtroModel.FechaEmision
+                };
+
+                var facturaEntities =
+                    await _repository.GetFacturaRepostesAsync(filtroEntity);
+
+
+                if (facturaEntities == null)
+                    return null;
+
+
+            var response = facturaEntities.Select(entity => new GetFacturaReposte
             {
-                EmpresaId = filtroModel.EmpresaId,
-                FechaDesde = filtroModel.FechaDesde,
-                FechaHasta = filtroModel.FechaHasta
-            };
-
-            var facturaRepostesEntities = await _repository.GetFacturaRepostesAsync(filtro);
-
-            if (facturaRepostesEntities == null)
-                return null;
-
-            return facturaRepostesEntities.Select(entity => new GetFacturaReposte
-            {
+                Id = entity.Id,
                 EmpresaId = entity.EmpresaId,
-                FechaDesde = entity.FechaDesde,
-                FechaHasta = entity.FechaHasta
-            }).ToList();
-        }
+                NCF = entity.NCF,
+                FechaEmision = entity.FechaEmision,
+                MontoTotal = entity.MontoTotal,
+                ItbisTotal = entity.ItbisTotal,
+                SubTotal = entity.SubTotal,
+                Estado = entity.Estado,
+                TrackId = entity.TrackId,
+                Cliente = entity.Cliente,
+                ClienteDocumento = entity.ClienteDocumento,
+                TipoComprobante = entity.TipoComprobante,
 
-        public async Task<List<GetResumenFactura>> GetResumenFacturasAsync(GetResumenFactura filtroModel)
-        {
-            var filtro = new ResumenFacturas
-            {
-                EmpresaId = filtroModel.EmpresaId,
-                Mes = filtroModel.Mes,
-                Anio = filtroModel.Anio
-            };
-
-            var resumenFacturasEntities = await _repository.GetResumenFacturasAsync(filtro);
-
-            if(resumenFacturasEntities == null)
-                return null;
-
-            return resumenFacturasEntities.Select(entity => new GetResumenFactura
-            {
-                EmpresaId = entity.EmpresaId,
+                // RESUMEN
+                Anio = entity.Anio,
                 Mes = entity.Mes,
-                Anio = entity.Anio
+                CantidadFacturas = entity.CantidadFacturas,
+                TotalFacturado = entity.TotalFacturado,
+                TotalItbis = entity.TotalItbis
+
             }).ToList();
+
+
+
+            return response;
         }
     }
 }

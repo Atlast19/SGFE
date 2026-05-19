@@ -33,9 +33,9 @@ namespace SGFE.Percistence.Repository.TiposECF
                         command.Parameters.AddWithValue("@Codigo", entity.Codigo);
                         command.Parameters.AddWithValue("@Descripcion", entity.Descripcion);
 
-                        var rowAffected = await command.ExecuteNonQueryAsync();
+                        var result = await command.ExecuteScalarAsync();
 
-                        if (rowAffected > 0) 
+                        if (result != null && Convert.ToInt32(result) == 1)
                         {
                             _logger.LogInformation("TipoECF creado exitosamente");
 
@@ -45,9 +45,10 @@ namespace SGFE.Percistence.Repository.TiposECF
                                 Descripcion = entity.Descripcion
                             };
                         }
-                        else 
+                        else
                         {
                             _logger.LogWarning("No se pudo crear el TipoECF");
+
                             return null;
                         }
                     }

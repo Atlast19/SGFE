@@ -1,7 +1,7 @@
 ﻿
-namespace SGFE.Application.Models.Repostes
+namespace SGFE.Domein.Entitys.ReportesEntirys
 {
-    public class GetFacturaReposte
+    public class FacturaReportes
     {
         public int Id { get; set; }
 

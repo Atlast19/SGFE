@@ -1,5 +1,4 @@
 ﻿using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SGFE.Application.Interfaces.SessionContext;
 using SGFE.Domein.Entitys;
@@ -35,10 +34,10 @@ namespace SGFE.Percistence.Repository.Usuarios
                         command.Parameters.AddWithValue("@Email", entity.Email);
                         command.Parameters.AddWithValue("@PasswordHash", entity.PasswordHash);
 
-                        
-                        var rowsAffected = await command.ExecuteNonQueryAsync();
 
-                        if (rowsAffected > 0)
+                        var result = await command.ExecuteScalarAsync();
+
+                        if (result != null && Convert.ToInt32(result) == 1)
                         {
                             _logger.LogInformation("Usuario creado exitosamente");
 
@@ -54,6 +53,7 @@ namespace SGFE.Percistence.Repository.Usuarios
                         else
                         {
                             _logger.LogWarning("No se pudo crear el usuario");
+
                             return null;
                         }
                     }

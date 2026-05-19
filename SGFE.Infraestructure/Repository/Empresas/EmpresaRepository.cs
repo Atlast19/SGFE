@@ -1,5 +1,4 @@
 ﻿using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SGFE.Application.Interfaces.SessionContext;
 using SGFE.Domein.Entitys;
@@ -39,12 +38,15 @@ namespace SGFE.Percistence.Repository.Empresas
                         command.Parameters.AddWithValue("@Telefono", entity.Telefono);
                         command.Parameters.AddWithValue("@Email", entity.Email);
 
-                        
-                        var rowsAffected = await command.ExecuteNonQueryAsync();
 
-                        if (rowsAffected > 0)
+                        var result = await command.ExecuteScalarAsync();
+
+                        if (result != null && Convert.ToInt32(result) == 1)
                         {
-                            _logger.LogInformation("Empresa creada exitosamente con RNC: {RNC}", entity.RNC);
+                            _logger.LogInformation(
+                                "Empresa creada exitosamente con RNC: {RNC}",
+                                entity.RNC
+                            );
 
                             var empresaCreada = new Empresa
                             {
@@ -61,7 +63,11 @@ namespace SGFE.Percistence.Repository.Empresas
                         }
                         else
                         {
-                            _logger.LogWarning("No se pudo crear la empresa con RNC: {RNC}", entity.RNC);
+                            _logger.LogWarning(
+                                "No se pudo crear la empresa con RNC: {RNC}",
+                                entity.RNC
+                            );
+
                             return null;
                         }
                     }

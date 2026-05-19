@@ -32,17 +32,19 @@ namespace SGFE.Percistence.Repository.Roles
                         command.Parameters.AddWithValue("@Descripcion", entity.Descripcion);
 
 
-                        var rowsAffected = await command.ExecuteNonQueryAsync();
+                        var result = await command.ExecuteScalarAsync();
 
-                        if (rowsAffected > 0)
+                        if (result != null && Convert.ToInt32(result) == 1)
                         {
                             _logger.LogInformation("Rol creado exitosamente");
-                            var Roles = new Rol
+
+                            var role = new Rol
                             {
                                 Nombre = entity.Nombre,
                                 Descripcion = entity.Descripcion
                             };
-                            return Roles;
+
+                            return role;
                         }
                         else
                         {
